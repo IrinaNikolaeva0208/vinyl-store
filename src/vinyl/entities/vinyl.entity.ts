@@ -14,7 +14,7 @@ export class Vinyl {
   @Column()
   authorName: string;
 
-  @Column()
+  @Column({ type: 'float' })
   price: number;
 
   @Column()
