@@ -4,12 +4,13 @@ import {
   IsNotEmpty,
   IsNumber,
   Min,
-  IsOptional,
+  IsAlpha,
+  IsAlphanumeric,
 } from 'class-validator';
 
 export class CreateVinylDto {
   @IsNotEmpty()
-  @IsString()
+  @IsAlphanumeric()
   name: string;
 
   @IsNotEmpty()
@@ -17,7 +18,7 @@ export class CreateVinylDto {
   description: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsAlpha()
   authorName: string;
 
   @IsNotEmpty()
@@ -25,8 +26,4 @@ export class CreateVinylDto {
   @Min(0.01)
   @Transform(({ value }) => +value)
   price: number;
-
-  @IsString()
-  @IsOptional()
-  image?: string;
 }
