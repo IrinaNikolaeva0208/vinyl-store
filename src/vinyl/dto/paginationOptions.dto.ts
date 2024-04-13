@@ -1,7 +1,6 @@
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { PropertyToSortBy } from './propertyToSortBy.enum';
-import { SortOrder } from './sortOrder.enum';
+import { PropertyToSortBy, SortOrder } from '../types';
 
 export class PaginationOptions {
   @IsInt()

@@ -14,11 +14,14 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
-import { ParseImagePipe } from 'src/utils/parseImage.pipe';
-import { CreateVinylDto, UpdateVinylDto } from './dto';
+import { ParseImagePipe } from '../utils/parseImage.pipe';
+import {
+  CreateVinylDto,
+  UpdateVinylDto,
+  SearchOptions,
+  PaginationOptions,
+} from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PaginationOptions } from './types/paginationOptions.type';
-import { SearchOptions } from './types/searchOptions.type';
 
 @Controller('vinyl')
 export class VinylController {

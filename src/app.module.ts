@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { VinylModule } from './vinyl/vinyl.module';
+import { VinylModule } from './vinyl';
 
 @Module({
   imports: [

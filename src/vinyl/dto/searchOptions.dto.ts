@@ -1,4 +1,4 @@
-import { PaginationOptions } from './paginationOptions.type';
+import { PaginationOptions } from './paginationOptions.dto';
 import { IsOptional, IsAlphanumeric, IsAlpha } from 'class-validator';
 
 export class SearchOptions extends PaginationOptions {

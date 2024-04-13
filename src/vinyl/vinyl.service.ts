@@ -3,11 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from './cloudinary';
 import { NO_PHOTO_URL } from '../utils/constants';
 import { Repository } from 'typeorm';
-import { Vinyl } from './entities/vinyl.entity';
-import { CreateVinylDto, UpdateVinylDto } from './dto';
-import { PaginationOptions } from './types/paginationOptions.type';
-import { SortOrder } from './types/sortOrder.enum';
-import { SearchOptions } from './types/searchOptions.type';
+import { Vinyl } from './entities';
+import {
+  CreateVinylDto,
+  UpdateVinylDto,
+  SearchOptions,
+  PaginationOptions,
+} from './dto';
+import { SortOrder } from './types';
 
 @Injectable()
 export class VinylService {
