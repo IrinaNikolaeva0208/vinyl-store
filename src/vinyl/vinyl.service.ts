@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from './cloudinary';
 import { NO_PHOTO_URL } from '../utils/constants';
 import { Repository } from 'typeorm';
 import { Vinyl } from './entities/vinyl.entity';
-import { CreateVinylDto } from './dto/createVinyl.dto';
+import { CreateVinylDto, UpdateVinylDto } from './dto';
 import { PaginationOptions } from './types/paginationOptions.type';
 import { SortOrder } from './types/sortOrder.enum';
 
@@ -27,7 +27,7 @@ export class VinylService {
     };
   }
 
-  async create(
+  async createVinyl(
     createVinylDto: CreateVinylDto,
     file: Express.Multer.File | undefined,
   ) {
@@ -41,6 +41,35 @@ export class VinylService {
     });
 
     return await this.vinylRepository.save(newVinyl);
+  }
+
+  async updateVinylById(
+    id: string,
+    updateVinylDto: UpdateVinylDto,
+    file: Express.Multer.File | undefined,
+  ) {
+    const requiredVinyl = await this.getVinylById(id);
+    const image = file
+      ? (await this.cloudinaryService.uploadImage(file)).url
+      : requiredVinyl.image;
+
+    return await this.vinylRepository.save({
+      ...requiredVinyl,
+      ...updateVinylDto,
+      image,
+    });
+  }
+
+  async deleteVinylById(id: string) {
+    await this.getVinylById(id);
+    await this.vinylRepository.delete(id);
+  }
+
+  async getVinylById(id: string) {
+    const requiredVinyl = await this.vinylRepository.findOne({ where: { id } });
+    if (!requiredVinyl) throw new NotFoundException('Vinyl not found');
+
+    return requiredVinyl;
   }
 
   async getVinylPage(paginationOptions: PaginationOptions) {
