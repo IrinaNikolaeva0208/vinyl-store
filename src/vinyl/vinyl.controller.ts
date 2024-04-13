@@ -5,7 +5,6 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
-  ParseFilePipeBuilder,
   HttpStatus,
   Query,
   Param,
@@ -15,7 +14,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
-import { FILE_TYPE, MAX_FILE_SIZE } from '../utils/constants';
+import { ParseImagePipe } from 'src/utils/parseImage.pipe';
 import { CreateVinylDto, UpdateVinylDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaginationOptions } from './types/paginationOptions.type';
@@ -42,19 +41,7 @@ export class VinylController {
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createVinyl(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: FILE_TYPE,
-        })
-        .addMaxSizeValidator({
-          maxSize: MAX_FILE_SIZE,
-        })
-        .build({
-          fileIsRequired: false,
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFile(ParseImagePipe)
     file: Express.Multer.File | undefined,
     @Body() createVinylDto: CreateVinylDto,
   ) {
@@ -64,19 +51,7 @@ export class VinylController {
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   updateVinyl(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: FILE_TYPE,
-        })
-        .addMaxSizeValidator({
-          maxSize: MAX_FILE_SIZE,
-        })
-        .build({
-          fileIsRequired: false,
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFile(ParseImagePipe)
     file: Express.Multer.File | undefined,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateVinylDto: UpdateVinylDto,
