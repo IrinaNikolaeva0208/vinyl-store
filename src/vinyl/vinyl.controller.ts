@@ -7,19 +7,21 @@ import {
   UploadedFile,
   ParseFilePipeBuilder,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
 import { FILE_TYPE, MAX_FILE_SIZE } from '../utils/constants';
 import { CreateVinylDto } from './dto/createVinyl.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginationOptions } from './types/paginationOptions.type';
 
 @Controller('vinyl')
 export class VinylController {
-  constructor(private readonly appService: VinylService) {}
+  constructor(private readonly vinylService: VinylService) {}
 
   @Get()
-  getAllVinyl() {
-    return this.appService.getAll();
+  getVinylPage(@Query() paginationOptions: PaginationOptions) {
+    return this.vinylService.getVinylPaginationResults(paginationOptions);
   }
 
   @Post()
@@ -41,6 +43,6 @@ export class VinylController {
     file: Express.Multer.File | undefined,
     @Body() createVinylDto: CreateVinylDto,
   ) {
-    return this.appService.create(createVinylDto, file);
+    return this.vinylService.create(createVinylDto, file);
   }
 }

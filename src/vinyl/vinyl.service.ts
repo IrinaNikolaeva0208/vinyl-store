@@ -5,17 +5,26 @@ import { NO_PHOTO_URL } from '../utils/constants';
 import { Repository } from 'typeorm';
 import { Vinyl } from './entities/vinyl.entity';
 import { CreateVinylDto } from './dto/createVinyl.dto';
+import { PaginationOptions } from './types/paginationOptions.type';
+import { SortOrder } from './types/sortOrder.enum';
 
 @Injectable()
 export class VinylService {
   constructor(
     @InjectRepository(Vinyl) private vinylRepository: Repository<Vinyl>,
-
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async getAll() {
-    return await this.vinylRepository.find();
+  async getVinylPaginationResults(paginationOptions: PaginationOptions) {
+    if (paginationOptions.sortBy && !paginationOptions.order) {
+      paginationOptions.order = SortOrder.ASC;
+    }
+
+    const [vinylPage, total] = await this.getVinylPage(paginationOptions);
+    return {
+      data: vinylPage,
+      pagination: { ...paginationOptions, totalRecords: total },
+    };
   }
 
   async create(
@@ -32,5 +41,18 @@ export class VinylService {
     });
 
     return await this.vinylRepository.save(newVinyl);
+  }
+
+  async getVinylPage(paginationOptions: PaginationOptions) {
+    return await this.vinylRepository.findAndCount({
+      skip: paginationOptions.offset,
+      take: paginationOptions.limit,
+      order: paginationOptions.sortBy
+        ? {
+            [paginationOptions.sortBy]:
+              paginationOptions.order || SortOrder.ASC,
+          }
+        : {},
+    });
   }
 }
