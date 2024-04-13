@@ -19,6 +19,7 @@ import { FILE_TYPE, MAX_FILE_SIZE } from '../utils/constants';
 import { CreateVinylDto, UpdateVinylDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaginationOptions } from './types/paginationOptions.type';
+import { SearchOptions } from './types/searchOptions.type';
 
 @Controller('vinyl')
 export class VinylController {
@@ -26,7 +27,16 @@ export class VinylController {
 
   @Get()
   getVinylPage(@Query() paginationOptions: PaginationOptions) {
-    return this.vinylService.getVinylPaginationResults(paginationOptions);
+    return this.vinylService.getVinylPaginationResults<PaginationOptions>(
+      paginationOptions,
+    );
+  }
+
+  @Get('search')
+  searchForVinyl(@Query() searchOptions: SearchOptions) {
+    return this.vinylService.getVinylPaginationResults<SearchOptions>(
+      searchOptions,
+    );
   }
 
   @Post()

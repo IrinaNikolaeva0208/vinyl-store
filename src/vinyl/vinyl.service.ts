@@ -7,6 +7,7 @@ import { Vinyl } from './entities/vinyl.entity';
 import { CreateVinylDto, UpdateVinylDto } from './dto';
 import { PaginationOptions } from './types/paginationOptions.type';
 import { SortOrder } from './types/sortOrder.enum';
+import { SearchOptions } from './types/searchOptions.type';
 
 @Injectable()
 export class VinylService {
@@ -15,15 +16,17 @@ export class VinylService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async getVinylPaginationResults(paginationOptions: PaginationOptions) {
-    if (paginationOptions.sortBy && !paginationOptions.order) {
-      paginationOptions.order = SortOrder.ASC;
+  async getVinylPaginationResults<Options extends PaginationOptions>(
+    options: Options,
+  ) {
+    if (options.sortBy && !options.order) {
+      options.order = SortOrder.ASC;
     }
 
-    const [vinylPage, total] = await this.getVinylPage(paginationOptions);
+    const [vinylPage, total] = await this.getVinylPage(options);
     return {
       data: vinylPage,
-      pagination: { ...paginationOptions, totalRecords: total },
+      pagination: { ...options, total },
     };
   }
 
@@ -72,16 +75,20 @@ export class VinylService {
     return requiredVinyl;
   }
 
-  async getVinylPage(paginationOptions: PaginationOptions) {
+  async getVinylPage(options: SearchOptions) {
+    const filter: { name?: string; authorName?: string } = {};
+    if (options.name) filter.name = options.name;
+    if (options.authorName) filter.authorName = options.authorName;
+
     return await this.vinylRepository.findAndCount({
-      skip: paginationOptions.offset,
-      take: paginationOptions.limit,
-      order: paginationOptions.sortBy
+      skip: options.offset,
+      take: options.limit,
+      order: options.sortBy
         ? {
-            [paginationOptions.sortBy]:
-              paginationOptions.order || SortOrder.ASC,
+            [options.sortBy]: options.order || SortOrder.ASC,
           }
         : {},
+      where: filter,
     });
   }
 }
