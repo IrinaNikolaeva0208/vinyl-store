@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from '../types';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -21,6 +22,11 @@ export class User {
   @Column()
   email: string;
 
+  @Exclude()
   @Column()
   role: Role;
+
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
+  }
 }
