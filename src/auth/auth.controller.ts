@@ -3,7 +3,9 @@ import { GoogleOauthGuard, JwtRefreshGuard } from './guards';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { User } from './entities';
+import { Public } from 'src/utils/public.decorator';
 
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

@@ -22,11 +22,13 @@ import {
   PaginationOptions,
 } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Public } from 'src/utils/public.decorator';
 
 @Controller('vinyl')
 export class VinylController {
   constructor(private readonly vinylService: VinylService) {}
 
+  @Public()
   @Get()
   getVinylPage(@Query() paginationOptions: PaginationOptions) {
     return this.vinylService.getVinylPaginationResults<PaginationOptions>(
