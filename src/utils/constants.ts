@@ -3,7 +3,7 @@ const NO_PHOTO_URL =
 
 const FILE_TYPE = /(jpg|jpeg|png|webp)$/;
 const MAX_FILE_SIZE = 10e6;
-const AUTH_REDIRECT_ROUTE = 'vinyl?offset=0&limit=10';
+const AUTH_REDIRECT_ROUTE = '/vinyl?offset=0&limit=10';
 const LOGOUT_REDIRECT_ROUTE = '/auth/google';
 
 export {

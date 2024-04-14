@@ -1,23 +1,35 @@
-import { Controller, Get, UseGuards, Post, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Post,
+  Req,
+  Res,
+  Param,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { GoogleOauthGuard, JwtRefreshGuard } from './guards';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { User } from './entities';
-import { Public } from 'src/utils/public.decorator';
+import { Public, AdminOnly } from '../utils/decorators';
 import {
   AUTH_REDIRECT_ROUTE,
   LOGOUT_REDIRECT_ROUTE,
 } from 'src/utils/constants';
+import { AdminOnlyGuard } from '../utils/guards';
 
-@Public()
+@UseGuards(AdminOnlyGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Get('google')
   @UseGuards(GoogleOauthGuard)
   async signInWithGoogle() {}
 
+  @Public()
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
   async execGoogleCallback(
@@ -36,6 +48,7 @@ export class AuthController {
       .redirect(AUTH_REDIRECT_ROUTE);
   }
 
+  @Public()
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   async refreshAccessToken(
@@ -57,5 +70,11 @@ export class AuthController {
       .clearCookie('access')
       .clearCookie('refresh')
       .redirect(LOGOUT_REDIRECT_ROUTE);
+  }
+
+  @AdminOnly()
+  @Post('id')
+  assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {
+    return this.authService.changeUserRoleToAdmin(userId);
   }
 }

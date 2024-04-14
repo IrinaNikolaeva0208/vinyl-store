@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities';
 import { Repository } from 'typeorm';
+import { Role } from './types';
 
 @Injectable()
 export class AuthService {
@@ -37,8 +38,20 @@ export class AuthService {
   }
 
   async signAccessToken(user: User) {
-    const payload = { id: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email, role: user.role };
     const accessToken = await this.jwtService.signAsync(payload);
     return { accessToken, payload };
+  }
+
+  async changeUserRoleToAdmin(userId: string) {
+    const existingUser = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    existingUser.role = Role.ADMIN;
+    return await this.usersRepository.save(existingUser);
   }
 }

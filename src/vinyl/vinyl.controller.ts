@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Delete,
+  UseGuards,
   HttpCode,
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
@@ -22,8 +23,10 @@ import {
   PaginationOptions,
 } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Public } from 'src/utils/public.decorator';
+import { AdminOnly, Public } from '../utils/decorators';
+import { AdminOnlyGuard } from '../utils/guards';
 
+@UseGuards(AdminOnlyGuard)
 @Controller('vinyl')
 export class VinylController {
   constructor(private readonly vinylService: VinylService) {}
@@ -43,6 +46,7 @@ export class VinylController {
     );
   }
 
+  @AdminOnly()
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createVinyl(
@@ -53,6 +57,7 @@ export class VinylController {
     return this.vinylService.createVinyl(createVinylDto, file);
   }
 
+  @AdminOnly()
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   updateVinyl(
@@ -64,6 +69,7 @@ export class VinylController {
     return this.vinylService.updateVinylById(id, updateVinylDto, file);
   }
 
+  @AdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteVinyl(@Param('id', ParseUUIDPipe) id: string) {
