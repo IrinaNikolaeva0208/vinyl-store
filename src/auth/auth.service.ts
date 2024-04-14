@@ -26,10 +26,19 @@ export class AuthService {
     return existingUser;
   }
 
-  async signTokens(user: User) {
+  async getFreshTokens(user: User) {
+    const { accessToken, payload } = await this.signAccessToken(user);
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_KEY'),
+      expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
+    });
+
+    return { accessToken, refreshToken };
+  }
+
+  async signAccessToken(user: User) {
     const payload = { id: user.id, email: user.email };
     const accessToken = await this.jwtService.signAsync(payload);
-
-    return { accessToken };
+    return { accessToken, payload };
   }
 }

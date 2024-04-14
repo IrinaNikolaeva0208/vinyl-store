@@ -1,12 +1,5 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  HttpStatus,
-  Req,
-  Res,
-} from '@nestjs/common';
-import { GoogleOauthGuard } from './guards';
+import { Controller, Get, UseGuards, Post, Req, Res } from '@nestjs/common';
+import { GoogleOauthGuard, JwtRefreshGuard } from './guards';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { User } from './entities';
@@ -21,12 +14,33 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
-  async execGoogleCallback(@Req() request: Request, @Res() response: Response) {
+  async execGoogleCallback(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const user = await this.authService.createGoogleIfNotExists(
       request.user as User,
     );
-    const { accessToken } = await this.authService.signTokens(user);
-    response.cookie('accessToken', accessToken);
-    response.status(HttpStatus.OK).json({ message: 'Successfully logged in' });
+
+    const { accessToken, refreshToken } =
+      await this.authService.getFreshTokens(user);
+    response.cookie('access', accessToken, { httpOnly: true });
+    response.cookie('refresh', refreshToken, { httpOnly: true });
+
+    return { message: 'Successfully logged in' };
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('refresh')
+  async refreshAccessToken(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { accessToken } = await this.authService.signAccessToken(
+      request.user as User,
+    );
+    response.cookie('access', accessToken, { httpOnly: true });
+
+    return { message: 'Successfully refreshed' };
   }
 }
