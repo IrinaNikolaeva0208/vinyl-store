@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from './entities';
 import { Repository } from 'typeorm';
@@ -24,6 +28,11 @@ export class ReviewsService {
       authorId,
     });
     return await this.reviewsRepository.save(newReview);
+  }
+
+  async deleteVinylReview(reviewId: string) {
+    const { affected } = await this.reviewsRepository.delete(reviewId);
+    if (!affected) throw new NotFoundException('Review not found'); //
   }
 
   async checkIfReviewExists(authorId: string, vinylId: string) {
