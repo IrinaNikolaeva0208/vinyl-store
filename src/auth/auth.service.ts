@@ -46,6 +46,6 @@ export class AuthService {
     }
 
     existingUser.role = Role.ADMIN;
-    return await this.usersService.updateUser(userId, existingUser);
+    return await this.usersService.updateUser(existingUser);
   }
 }
