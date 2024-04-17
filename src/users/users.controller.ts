@@ -9,6 +9,8 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -43,6 +45,7 @@ export class UsersController {
   }
 
   @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteProfile(@Req() request: Request, @Res() response: Response) {
     await this.usersService.deleteUserById((request.user as User).id);
     response
