@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CloudinaryService } from './cloudinary';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { NO_PHOTO_URL } from '../utils/constants';
 import { Repository } from 'typeorm';
 import { Vinyl } from './entities';

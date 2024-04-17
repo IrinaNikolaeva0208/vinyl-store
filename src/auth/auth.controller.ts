@@ -11,7 +11,7 @@ import {
 import { GoogleOauthGuard, JwtRefreshGuard } from './guards';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { User } from './entities';
+import { User } from '../users/entities';
 import { Public, AdminOnly } from '../utils/decorators';
 import {
   AUTH_REDIRECT_ROUTE,
