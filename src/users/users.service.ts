@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { User } from './entities';
+import { UpdateProfileDto } from './dto';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly cloudinaryService: CloudinaryService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
@@ -22,9 +25,27 @@ export class UsersService {
     await this.userRepository.delete(userId);
   }
 
-  async updateUser(userId: string, updateDto: Partial<User>) {
-    const user = await this.getUserById(userId);
-    return await this.userRepository.save({ ...user, ...updateDto });
+  async updateProfile(
+    userId: string,
+    file: Express.Multer.File | undefined,
+    updateProfileDto: UpdateProfileDto,
+  ) {
+    console.log(updateProfileDto);
+    const requiredUser = await this.getUserById(userId);
+    const avatar = file
+      ? (await this.cloudinaryService.uploadImage(file)).url
+      : requiredUser.avatar;
+
+    return await this.updateUser({
+      ...requiredUser,
+      ...updateProfileDto,
+      avatar,
+    });
+  }
+
+  async updateUser(user: User) {
+    const updatedUser = await this.userRepository.save(user);
+    return new User({ ...updatedUser });
   }
 
   async getUserById(userId: string) {
