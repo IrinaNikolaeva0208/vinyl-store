@@ -8,12 +8,15 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { Request } from 'express';
 import { CreateReviewDto } from './dto/createReview.dto';
 import { User } from 'src/users/entities';
-import { AdminOnly } from 'src/utils/decorators';
+import { AdminOnly, Public } from 'src/utils/decorators';
+import { PaginationOptions } from './dto';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -28,6 +31,12 @@ export class ReviewsController {
       (requset.user as User).id,
       createReviewDto,
     );
+  }
+
+  @Public()
+  @Get()
+  getVinylReviews(@Query() paginationOptions: PaginationOptions) {
+    return this.reviewsService.getVinylReviews(paginationOptions);
   }
 
   @Delete(':id')

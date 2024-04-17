@@ -8,6 +8,7 @@ import { Review } from './entities';
 import { Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/createReview.dto';
 import { VinylService } from 'src/vinyl/vinyl.service';
+import { PaginationOptions } from './dto';
 
 @Injectable()
 export class ReviewsService {
@@ -41,5 +42,22 @@ export class ReviewsService {
     });
     if (review)
       throw new ConflictException('Only one review per vinyl is allowed');
+  }
+
+  async getVinylReviews(options: PaginationOptions) {
+    await this.vinylService.getVinylById(options.vinylId);
+    const [reviewsPage, total] = await this.getReviewsPage(options);
+    return {
+      data: reviewsPage,
+      pagination: { ...options, total },
+    };
+  }
+
+  async getReviewsPage({ limit, offset, vinylId }: PaginationOptions) {
+    return await this.reviewsRepository.findAndCount({
+      where: { vinylId },
+      take: limit,
+      skip: offset,
+    });
   }
 }
