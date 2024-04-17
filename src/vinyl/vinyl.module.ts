@@ -9,5 +9,6 @@ import { Vinyl } from './entities';
   imports: [CloudinaryModule, TypeOrmModule.forFeature([Vinyl])],
   controllers: [VinylController],
   providers: [VinylService],
+  exports: [VinylService],
 })
 export class VinylModule {}
