@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CloudinaryModule } from './cloudinary';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { VinylController } from './vinyl.controller';
 import { VinylService } from './vinyl.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
