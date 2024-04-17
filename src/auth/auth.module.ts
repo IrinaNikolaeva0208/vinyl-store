@@ -2,24 +2,24 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './entities';
+import { PassportModule } from '@nestjs/passport';
+import { APP_GUARD } from '@nestjs/core';
+import { User } from '../users/entities';
 import { AuthController } from './auth.controller';
-import { ProfileController } from './profile/profile.controller';
 import { AuthService } from './auth.service';
 import {
   GoogleStrategy,
   JwtAuthStrategy,
   JwtRefreshStrategy,
 } from './strategies';
-import { PassportModule } from '@nestjs/passport';
-import { APP_GUARD } from '@nestjs/core';
+import { UsersModule } from 'src/users/users.module';
 import { JwtAuthGuard } from './guards';
-import { ProfileService } from './profile/profile.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     ConfigModule.forRoot(),
+    UsersModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -30,10 +30,9 @@ import { ProfileService } from './profile/profile.service';
       }),
     }),
   ],
-  controllers: [AuthController, ProfileController],
+  controllers: [AuthController],
   providers: [
     AuthService,
-    ProfileService,
     GoogleStrategy,
     JwtAuthStrategy,
     JwtRefreshStrategy,

@@ -1,27 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities';
-import { Repository } from 'typeorm';
+import { User } from '../users/entities';
 import { Role } from './types';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
 
   async createGoogleIfNotExists(user: Omit<User, 'id'>) {
-    const existingUser = await this.usersRepository.findOne({
-      where: { email: user.email },
-    });
+    const existingUser = await this.usersService.getUserByEmail(user.email);
 
     if (!existingUser) {
-      const newUser = this.usersRepository.create(user);
-      return await this.usersRepository.save(newUser);
+      return await this.usersService.createUser(user);
     }
 
     return existingUser;
@@ -44,14 +40,12 @@ export class AuthService {
   }
 
   async changeUserRoleToAdmin(userId: string) {
-    const existingUser = await this.usersRepository.findOne({
-      where: { id: userId },
-    });
+    const existingUser = await this.usersService.getUserById(userId);
     if (!existingUser) {
       throw new NotFoundException('User not found');
     }
 
     existingUser.role = Role.ADMIN;
-    return await this.usersRepository.save(existingUser);
+    return await this.usersService.updateUser(userId, existingUser);
   }
 }

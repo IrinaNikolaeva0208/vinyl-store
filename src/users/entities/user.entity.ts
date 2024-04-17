@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { Role } from '../types';
+import { Role } from '../../auth/types';
 import { Exclude } from 'class-transformer';
 
 @Entity()
