@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { VinylModule } from './vinyl';
-import { AuthModule } from './auth';
+import { VinylModule } from './vinyl/vinyl.module';
+import { AuthModule } from './auth/auth.module';
+import { ReviewsModule } from './reviews/reviews.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module';
     }),
     VinylModule,
     AuthModule,
+    ReviewsModule,
     UsersModule,
   ],
 })
