@@ -52,4 +52,12 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     return new User(user);
   }
+
+  async getUserWithReviewsAndPurchasedVinyl(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { reviews: true },
+    });
+    return new User(user);
+  }
 }

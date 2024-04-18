@@ -11,6 +11,7 @@ import {
   PaginationOptions,
 } from './dto';
 import { SortOrder } from './types';
+import { Review } from 'src/reviews/entities';
 
 @Injectable()
 export class VinylService {
@@ -83,15 +84,35 @@ export class VinylService {
     if (options.name) filter.name = options.name;
     if (options.authorName) filter.authorName = options.authorName;
 
-    return await this.vinylRepository.findAndCount({
-      skip: options.offset,
-      take: options.limit,
-      order: options.sortBy
-        ? {
-            [options.sortBy]: options.order || SortOrder.ASC,
-          }
-        : {},
-      where: filter,
-    });
+    const result = await this.vinylRepository
+      .createQueryBuilder('vinyl')
+      .leftJoinAndMapMany(
+        'vinyl.reviews',
+        Review,
+        'review',
+        'review.vinylId = vinyl.id',
+      )
+      .skip(options.offset)
+      .take(options.limit)
+      .orderBy(
+        options.sortBy
+          ? {
+              [options.sortBy]: options.order || SortOrder.ASC,
+            }
+          : {},
+      )
+      .where(filter)
+      .getManyAndCount();
+
+    return [
+      result[0].map((vinyl) => ({
+        ...vinyl,
+        reviews: vinyl.reviews[0],
+        averageScore:
+          vinyl.reviews.reduce((prev, cur) => prev + cur.score, 0) /
+          vinyl.reviews.length,
+      })),
+      result[1],
+    ];
   }
 }

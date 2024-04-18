@@ -27,7 +27,9 @@ export class UsersController {
 
   @Get()
   getProfile(@Req() request: Request) {
-    return this.usersService.getUserById((request.user as User).id);
+    return this.usersService.getUserWithReviewsAndPurchasedVinyl(
+      (request.user as User).id,
+    );
   }
 
   @Patch()
