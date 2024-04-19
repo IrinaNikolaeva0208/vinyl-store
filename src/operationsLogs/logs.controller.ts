@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { AdminOnly } from 'src/utils/decorators';
 import { LogsService } from './logs.service';
+import { LogsSearchOptions } from './dto';
 
 @Controller('logs')
 export class LogsController {
@@ -8,7 +9,7 @@ export class LogsController {
 
   @AdminOnly()
   @Get()
-  getSystemLogs() {
-    return this.logsService.getAllLogs();
+  getSystemLogs(@Query() searchOptions: LogsSearchOptions) {
+    return this.logsService.getLogsPaginationResults(searchOptions);
   }
 }
