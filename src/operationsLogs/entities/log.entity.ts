@@ -12,6 +12,9 @@ export class Log {
   @Column()
   entity: OperationOn;
 
+  @Column()
+  entityId: string;
+
   @Column({ type: 'bigint' })
   createdAt: number;
 

@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/createReview.dto';
 import { VinylService } from 'src/vinyl/vinyl.service';
 import { PaginationOptions } from './dto';
+import { LogsService } from 'src/operationsLogs/logs.service';
+import { Entity, Operation } from 'src/operationsLogs/types';
 
 @Injectable()
 export class ReviewsService {
@@ -16,6 +18,7 @@ export class ReviewsService {
     @InjectRepository(Review)
     private readonly reviewsRepository: Repository<Review>,
     private readonly vinylService: VinylService,
+    private readonly logsService: LogsService,
   ) {}
 
   async createReviewOnVinyl(
@@ -28,12 +31,16 @@ export class ReviewsService {
       ...createReviewDto,
       authorId,
     });
-    return await this.reviewsRepository.save(newReview);
+
+    const savedReview = await this.reviewsRepository.save(newReview);
+    await this.logReviewOperation(authorId, savedReview.id, Operation.CREATE);
+    return savedReview;
   }
 
-  async deleteVinylReview(reviewId: string) {
+  async deleteVinylReview(reviewId: string, userId: string) {
     const { affected } = await this.reviewsRepository.delete(reviewId);
-    if (!affected) throw new NotFoundException('Review not found'); //
+    if (!affected) throw new NotFoundException('Review not found');
+    await this.logReviewOperation(userId, reviewId, Operation.DELETE);
   }
 
   async checkIfReviewExists(authorId: string, vinylId: string) {
@@ -71,6 +78,20 @@ export class ReviewsService {
       where: { authorId },
       take: limit,
       skip: offset,
+    });
+  }
+
+  async logReviewOperation(
+    userId: string,
+    entityId: string,
+    operation: Operation,
+  ) {
+    await this.logsService.createLog({
+      perfomedByUser: userId,
+      createdAt: Date.now(),
+      operation,
+      entityId,
+      entity: Entity.REVIEW,
     });
   }
 }

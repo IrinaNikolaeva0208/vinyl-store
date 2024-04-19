@@ -6,6 +6,7 @@ import { User } from './entities';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { PurchasesModule } from 'src/purchases/purchases.module';
 import { ReviewsModule } from 'src/reviews/reviews.module';
+import { LogsModule } from 'src/operationsLogs/logs.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ReviewsModule } from 'src/reviews/reviews.module';
     PurchasesModule,
     ReviewsModule,
     PurchasesModule,
+    LogsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

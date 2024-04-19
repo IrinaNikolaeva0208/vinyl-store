@@ -13,14 +13,10 @@ import { PurchasesService } from './purchases.service';
 import { Public } from 'src/utils/decorators';
 import { Request, Response } from 'express';
 import { User } from 'src/users/entities';
-import { StripeService } from './stripe.service';
 
 @Controller('purchases')
 export class PurchasesController {
-  constructor(
-    private readonly purchasesService: PurchasesService,
-    private readonly stripeService: StripeService,
-  ) {}
+  constructor(private readonly purchasesService: PurchasesService) {}
 
   @Post('/create-stripe-session')
   async buyVinyl(

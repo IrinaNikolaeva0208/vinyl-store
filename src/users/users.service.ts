@@ -6,6 +6,8 @@ import { User } from './entities';
 import { PaginationOptions, UpdateProfileDto } from './dto';
 import { ReviewsService } from 'src/reviews/reviews.service';
 import { PurchasesService } from 'src/purchases/purchases.service';
+import { LogsService } from 'src/operationsLogs/logs.service';
+import { Entity, Operation } from 'src/operationsLogs/types';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +16,7 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly reviewsService: ReviewsService,
     private readonly purchasesService: PurchasesService,
+    private readonly logsService: LogsService,
   ) {}
 
   async getUserByEmail(email: string) {
@@ -22,10 +25,13 @@ export class UsersService {
 
   async createUser(user: Omit<User, 'id'>) {
     const newUser = this.userRepository.create(user);
-    return await this.userRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
+    await this.logUserOperation(savedUser.id, Operation.CREATE);
+    return savedUser;
   }
 
   async deleteUserById(userId: string) {
+    await this.logUserOperation(userId, Operation.DELETE);
     await this.userRepository.delete(userId);
   }
 
@@ -34,7 +40,6 @@ export class UsersService {
     file: Express.Multer.File | undefined,
     updateProfileDto: UpdateProfileDto,
   ) {
-    console.log(updateProfileDto);
     const requiredUser = await this.getUserById(userId);
     const avatar = file
       ? (await this.cloudinaryService.uploadImage(file)).url
@@ -49,6 +54,7 @@ export class UsersService {
 
   async updateUser(user: User) {
     const updatedUser = await this.userRepository.save(user);
+    await this.logUserOperation(user.id, Operation.UPDATE);
     return new User({ ...updatedUser });
   }
 
@@ -88,5 +94,15 @@ export class UsersService {
       pagination: { purchasesLimit, purchasesOffset, totalPurchases },
     };
     return { profile: new User({ ...user }), reviews, purchases };
+  }
+
+  async logUserOperation(userId: string, operation: Operation) {
+    await this.logsService.createLog({
+      perfomedByUser: userId,
+      createdAt: Date.now(),
+      operation,
+      entityId: userId,
+      entity: Entity.USER,
+    });
   }
 }

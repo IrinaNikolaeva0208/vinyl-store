@@ -7,6 +7,8 @@ import { Stripe } from 'stripe';
 import { Purchase } from './entities/purchase.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Vinyl } from 'src/vinyl/entities';
+import { LogsService } from 'src/operationsLogs/logs.service';
+import { Entity, Operation } from 'src/operationsLogs/types';
 
 @Injectable()
 export class PurchasesService {
@@ -16,6 +18,7 @@ export class PurchasesService {
     private readonly vinylService: VinylService,
     private readonly stripeService: StripeService,
     private readonly mailService: MailService,
+    private readonly logsService: LogsService,
   ) {}
 
   async getCheckoutUrl(vinylId: string, userId: string, email: string) {
@@ -38,7 +41,12 @@ export class PurchasesService {
         createdAt: Date.now(),
       });
 
-      await this.purchasesRepository.save(newPurchase);
+      const savedPurchase = await this.purchasesRepository.save(newPurchase);
+      await this.logPurchaseOperation(
+        userId,
+        savedPurchase.id,
+        Operation.CREATE,
+      );
       await this.mailService.sendPaymentSuccededNotification(email, vinyl);
     }
   }
@@ -63,5 +71,19 @@ export class PurchasesService {
       .skip(offset)
       .where({ userId })
       .getManyAndCount();
+  }
+
+  async logPurchaseOperation(
+    userId: string,
+    entityId: string,
+    operation: Operation,
+  ) {
+    await this.logsService.createLog({
+      perfomedByUser: userId,
+      entity: Entity.VINYL,
+      entityId,
+      createdAt: Date.now(),
+      operation,
+    });
   }
 }

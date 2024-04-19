@@ -42,7 +42,13 @@ export class ReviewsController {
   @Delete(':id')
   @AdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteReview(@Param('id', ParseUUIDPipe) reviewId: string) {
-    await this.reviewsService.deleteVinylReview(reviewId);
+  async deleteReview(
+    @Param('id', ParseUUIDPipe) reviewId: string,
+    @Req() request: Request,
+  ) {
+    await this.reviewsService.deleteVinylReview(
+      reviewId,
+      (request.user as User).id,
+    );
   }
 }
