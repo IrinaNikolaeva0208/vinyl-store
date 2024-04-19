@@ -1,5 +1,6 @@
 # environment
 /.env
+/docker-compose.yml
 
 # compiled output
 /dist

@@ -45,17 +45,30 @@ export class ReviewsService {
   }
 
   async getVinylReviews(options: PaginationOptions) {
-    await this.vinylService.getVinylById(options.vinylId);
-    const [reviewsPage, total] = await this.getReviewsPage(options);
+    const { limit, offset, vinylId } = options;
+    await this.vinylService.getVinylById(vinylId);
+    const [reviewsPage, total] = await this.getReviewsPageForVinyl(
+      limit,
+      offset,
+      vinylId,
+    );
     return {
       data: reviewsPage,
       pagination: { ...options, total },
     };
   }
 
-  async getReviewsPage({ limit, offset, vinylId }: PaginationOptions) {
+  async getReviewsPageForVinyl(limit: number, offset: number, vinylId: string) {
     return await this.reviewsRepository.findAndCount({
       where: { vinylId },
+      take: limit,
+      skip: offset,
+    });
+  }
+
+  async getReviewsPageForUser(limit: number, offset: number, authorId: string) {
+    return await this.reviewsRepository.findAndCount({
+      where: { authorId },
       take: limit,
       skip: offset,
     });
