@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Get,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { Request } from 'express';
@@ -17,7 +18,9 @@ import { CreateReviewDto } from './dto/createReview.dto';
 import { User } from 'src/users/entities';
 import { AdminOnly, Public } from 'src/utils/decorators';
 import { PaginationOptions } from './dto';
+import { AdminOnlyGuard } from 'src/utils/guards';
 
+@UseGuards(AdminOnlyGuard)
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
