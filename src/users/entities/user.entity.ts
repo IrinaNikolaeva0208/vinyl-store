@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Role } from '../../auth/types';
 import { Exclude } from 'class-transformer';
 import { Review } from 'src/reviews/entities';
+import { Purchase } from 'src/purchases/entities/purchase.entity';
 
 @Entity()
 export class User {
@@ -29,6 +30,9 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.author)
   reviews: Review[];
+
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchases: Purchase[];
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);

@@ -10,11 +10,11 @@ export class MailService {
     private readonly configService: ConfigService,
   ) {}
 
-  async sendNotification(email: string, vinyl: Vinyl) {
+  async sendPaymentSuccededNotification(email: string, vinyl: Vinyl) {
     await this.mailerService.sendMail({
       from: this.configService.get<string>('GMAIL_EMAIL'),
       to: email,
-      subject: 'The payment was successfully completed!',
+      subject: 'The payment succeded!',
       text: `The payment (${vinyl.price}$) for your new vinyl record was successfully completed!\n\n
             Your new vinyl record:\n
             Name: ${vinyl.name}\n
