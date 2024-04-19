@@ -6,6 +6,7 @@ import { VinylService } from '../vinyl/vinyl.service';
 import { Stripe } from 'stripe';
 import { Purchase } from './entities/purchase.entity';
 import { MailService } from 'src/mail/mail.service';
+import { Vinyl } from 'src/vinyl/entities';
 
 @Injectable()
 export class PurchasesService {
@@ -40,5 +41,27 @@ export class PurchasesService {
       await this.purchasesRepository.save(newPurchase);
       await this.mailService.sendPaymentSuccededNotification(email, vinyl);
     }
+  }
+
+  async getPurchasesPageForUser(limit: number, offset: number, userId: string) {
+    return await this.purchasesRepository
+      .createQueryBuilder('purchase')
+      .leftJoinAndMapOne(
+        'purchase.vinyl',
+        Vinyl,
+        'vinyl',
+        'purchase.vinylId = vinyl.id',
+      )
+      .select([
+        'purchase.id',
+        'purchase.createdAt',
+        'vinyl.name',
+        'vinyl.authorName',
+        'vinyl.price',
+      ])
+      .take(limit)
+      .skip(offset)
+      .where({ userId })
+      .getManyAndCount();
   }
 }

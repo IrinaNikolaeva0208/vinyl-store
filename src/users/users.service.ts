@@ -3,13 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { User } from './entities';
-import { UpdateProfileDto } from './dto';
+import { PaginationOptions, UpdateProfileDto } from './dto';
+import { ReviewsService } from 'src/reviews/reviews.service';
+import { PurchasesService } from 'src/purchases/purchases.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly cloudinaryService: CloudinaryService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly reviewsService: ReviewsService,
+    private readonly purchasesService: PurchasesService,
   ) {}
 
   async getUserByEmail(email: string) {
@@ -53,11 +57,36 @@ export class UsersService {
     return new User(user);
   }
 
-  async getUserWithReviewsAndPurchasedVinyl(userId: string) {
+  async getUserWithReviewsAndPurchasedVinyl(
+    userId: string,
+    paginationOptions: PaginationOptions,
+  ) {
+    const { reviewsLimit, reviewsOffset, purchasesLimit, purchasesOffset } =
+      paginationOptions;
+
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: { reviews: true },
     });
-    return new User(user);
+    const [userReviewsPage, totalReviews] =
+      await this.reviewsService.getReviewsPageForUser(
+        reviewsLimit,
+        reviewsOffset,
+        userId,
+      );
+    const [userPurchasesPage, totalPurchases] =
+      await this.purchasesService.getPurchasesPageForUser(
+        purchasesLimit,
+        purchasesOffset,
+        userId,
+      );
+    const reviews = {
+      data: userReviewsPage,
+      pagination: { reviewsLimit, reviewsOffset, totalReviews },
+    };
+    const purchases = {
+      data: userPurchasesPage,
+      pagination: { purchasesLimit, purchasesOffset, totalPurchases },
+    };
+    return { profile: new User({ ...user }), reviews, purchases };
   }
 }

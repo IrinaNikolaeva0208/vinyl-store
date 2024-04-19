@@ -11,11 +11,12 @@ import {
   UploadedFile,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
-import { UpdateProfileDto } from './dto';
+import { PaginationOptions, UpdateProfileDto } from './dto';
 import { ParseImagePipe } from 'src/utils/parseImage.pipe';
 import { User } from './entities';
 import { LOGOUT_REDIRECT_ROUTE } from 'src/utils/constants';
@@ -26,9 +27,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  getProfile(@Req() request: Request) {
+  getProfile(
+    @Query() paginationOptions: PaginationOptions,
+    @Req() request: Request,
+  ) {
     return this.usersService.getUserWithReviewsAndPurchasedVinyl(
       (request.user as User).id,
+      paginationOptions,
     );
   }
 
