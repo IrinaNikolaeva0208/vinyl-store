@@ -73,7 +73,7 @@ export class AuthController {
   }
 
   @AdminOnly()
-  @Post('id')
+  @Post(':id')
   assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {
     return this.authService.changeUserRoleToAdmin(userId);
   }

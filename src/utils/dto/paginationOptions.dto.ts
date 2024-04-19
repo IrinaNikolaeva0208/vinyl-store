@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { PropertyToSortBy, SortOrder } from '../types';
+import { SortOrder } from '../types';
 
 export class PaginationOptions {
   @IsInt()
@@ -14,10 +14,6 @@ export class PaginationOptions {
   @Min(0)
   @Transform(({ value }) => +value)
   offset: number;
-
-  @IsEnum(PropertyToSortBy)
-  @IsOptional()
-  sortBy?: PropertyToSortBy;
 
   @IsEnum(SortOrder)
   @IsOptional()
