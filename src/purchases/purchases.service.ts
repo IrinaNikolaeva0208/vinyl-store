@@ -8,7 +8,7 @@ import { Purchase } from './entities/purchase.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Vinyl } from 'src/vinyl/entities';
 import { LogsService } from 'src/operationsLogs/logs.service';
-import { Entity, Operation } from 'src/operationsLogs/types';
+import { Entity, Operation } from 'src/utils/types';
 
 @Injectable()
 export class PurchasesService {

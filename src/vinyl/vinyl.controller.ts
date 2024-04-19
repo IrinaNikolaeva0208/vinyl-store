@@ -17,12 +17,8 @@ import {
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
 import { ParseImagePipe } from '../utils/parseImage.pipe';
-import {
-  CreateVinylDto,
-  UpdateVinylDto,
-  SearchOptions,
-  PaginationOptions,
-} from './dto';
+import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
+import { VinylPaginationOptions } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AdminOnly, Public } from '../utils/decorators';
 import { AdminOnlyGuard } from '../utils/guards';
@@ -36,8 +32,8 @@ export class VinylController {
 
   @Public()
   @Get()
-  getVinylPage(@Query() paginationOptions: PaginationOptions) {
-    return this.vinylService.getVinylPaginationResults<PaginationOptions>(
+  getVinylPage(@Query() paginationOptions: VinylPaginationOptions) {
+    return this.vinylService.getVinylPaginationResults<VinylPaginationOptions>(
       paginationOptions,
     );
   }

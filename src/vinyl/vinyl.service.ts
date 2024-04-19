@@ -4,16 +4,12 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { NO_PHOTO_URL } from '../utils/constants';
 import { Repository } from 'typeorm';
 import { Vinyl } from './entities';
-import {
-  CreateVinylDto,
-  UpdateVinylDto,
-  SearchOptions,
-  PaginationOptions,
-} from './dto';
-import { SortOrder } from './types';
+import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
+import { VinylPaginationOptions } from './dto';
+import { SortOrder } from '../utils/types';
 import { Review } from 'src/reviews/entities';
 import { LogsService } from 'src/operationsLogs/logs.service';
-import { Entity, Operation } from 'src/operationsLogs/types';
+import { Entity, Operation } from 'src/utils/types';
 
 @Injectable()
 export class VinylService {
@@ -23,7 +19,7 @@ export class VinylService {
     private readonly logsService: LogsService,
   ) {}
 
-  async getVinylPaginationResults<Options extends PaginationOptions>(
+  async getVinylPaginationResults<Options extends VinylPaginationOptions>(
     options: Options,
   ) {
     if (options.sortBy && !options.order) {

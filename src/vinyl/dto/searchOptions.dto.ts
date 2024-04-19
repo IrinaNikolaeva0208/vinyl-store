@@ -1,7 +1,7 @@
-import { PaginationOptions } from './paginationOptions.dto';
+import { VinylPaginationOptions } from './vinylPaginationOptions.dto';
 import { IsOptional, IsAlphanumeric, IsAlpha } from 'class-validator';
 
-export class SearchOptions extends PaginationOptions {
+export class SearchOptions extends VinylPaginationOptions {
   @IsOptional()
   @IsAlphanumeric()
   name?: string;

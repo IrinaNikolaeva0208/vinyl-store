@@ -7,7 +7,7 @@ import { PaginationOptions, UpdateProfileDto } from './dto';
 import { ReviewsService } from 'src/reviews/reviews.service';
 import { PurchasesService } from 'src/purchases/purchases.service';
 import { LogsService } from 'src/operationsLogs/logs.service';
-import { Entity, Operation } from 'src/operationsLogs/types';
+import { Entity, Operation } from 'src/utils/types';
 
 @Injectable()
 export class UsersService {

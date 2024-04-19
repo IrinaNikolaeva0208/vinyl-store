@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { Entity as OperationOn, Operation } from '../types';
+import { Entity as OperationOn, Operation } from '../../utils/types';
 
 @Entity()
 export class Log {

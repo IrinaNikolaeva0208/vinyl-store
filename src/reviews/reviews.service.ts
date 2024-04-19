@@ -10,7 +10,7 @@ import { CreateReviewDto } from './dto/createReview.dto';
 import { VinylService } from 'src/vinyl/vinyl.service';
 import { PaginationOptions } from './dto';
 import { LogsService } from 'src/operationsLogs/logs.service';
-import { Entity, Operation } from 'src/operationsLogs/types';
+import { Entity, Operation } from 'src/utils/types';
 
 @Injectable()
 export class ReviewsService {
