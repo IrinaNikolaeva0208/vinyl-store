@@ -127,7 +127,7 @@ export class VinylService {
     operation: Operation,
   ) {
     await this.logsService.createLog({
-      perfomedByUser: userId,
+      performedByUser: userId,
       entity: Entity.VINYL,
       createdAt: Date.now(),
       operation,

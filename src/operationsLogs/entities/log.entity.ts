@@ -19,5 +19,5 @@ export class Log {
   createdAt: number;
 
   @Column()
-  perfomedByUser: string;
+  performedByUser: string;
 }

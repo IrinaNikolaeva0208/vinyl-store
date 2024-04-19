@@ -79,7 +79,7 @@ export class PurchasesService {
     operation: Operation,
   ) {
     await this.logsService.createLog({
-      perfomedByUser: userId,
+      performedByUser: userId,
       entity: Entity.VINYL,
       entityId,
       createdAt: Date.now(),

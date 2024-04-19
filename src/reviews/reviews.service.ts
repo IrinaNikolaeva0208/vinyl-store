@@ -87,7 +87,7 @@ export class ReviewsService {
     operation: Operation,
   ) {
     await this.logsService.createLog({
-      perfomedByUser: userId,
+      performedByUser: userId,
       createdAt: Date.now(),
       operation,
       entityId,
