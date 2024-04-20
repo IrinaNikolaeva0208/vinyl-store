@@ -18,7 +18,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PaginationOptions, UpdateProfileDto } from './dto';
 import { ParseImagePipe } from 'src/utils/parseImage.pipe';
-import { LOGOUT_REDIRECT_ROUTE } from 'src/utils/constants';
+import {
+  ACCESS_TOKEN_COOKIE,
+  AVATAR_FIELD,
+  LOGOUT_REDIRECT_ROUTE,
+  REFRESH_TOKEN_COOKIE,
+} from 'src/utils/constants';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('profile')
@@ -37,7 +42,7 @@ export class UsersController {
   }
 
   @Patch()
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(FileInterceptor(AVATAR_FIELD))
   updateProfile(
     @UploadedFile(ParseImagePipe) file: Express.Multer.File | undefined,
     @Req() request: Request,
@@ -55,8 +60,8 @@ export class UsersController {
   async deleteProfile(@Req() request: Request, @Res() response: Response) {
     await this.usersService.deleteUserById(request.user.id);
     response
-      .clearCookie('access')
-      .clearCookie('refresh')
+      .clearCookie(ACCESS_TOKEN_COOKIE)
+      .clearCookie(REFRESH_TOKEN_COOKIE)
       .redirect(LOGOUT_REDIRECT_ROUTE);
   }
 }

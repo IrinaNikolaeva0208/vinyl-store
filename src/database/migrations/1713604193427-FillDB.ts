@@ -1,7 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-import { NO_PHOTO_URL } from '../../utils/constants';
+import {
+  ADMIN_BIRTHDATE,
+  ADMIN_FIRST_NAME,
+  ADMIN_LAST_NAME,
+  NO_PHOTO_URL,
+} from '../../utils/constants';
 import { Role } from '../../auth/types';
 
 dotenv.config();
@@ -21,7 +26,7 @@ export class FillDB1713604193427 implements MigrationInterface {
 
     const adminId = faker.string.uuid();
     await queryRunner.query(
-      `INSERT INTO "user" VALUES ('${adminId}', 'Iryna', 'Nikalayeva', '2002-10-24', '${NO_PHOTO_URL}', '${process.env.GMAIL_EMAIL}', '${Role.ADMIN}')`,
+      `INSERT INTO "user" VALUES ('${adminId}', '${ADMIN_FIRST_NAME}', '${ADMIN_LAST_NAME}', '${ADMIN_BIRTHDATE}', '${NO_PHOTO_URL}', '${process.env.GMAIL_EMAIL}', '${Role.ADMIN}')`,
     );
 
     for (let i = 0; i < vinylIds.length; i++) {

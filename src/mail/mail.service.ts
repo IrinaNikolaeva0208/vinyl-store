@@ -1,6 +1,11 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  GMAIL_EMAIL_CONFIG_KEY,
+  PAYMENT_SUCCEDED_MAIL_SUBJECT,
+  getPaymentSuccededMailText,
+} from 'src/utils/constants';
 import { Vinyl } from 'src/vinyl/entities';
 
 @Injectable()
@@ -12,16 +17,14 @@ export class MailService {
 
   async sendPaymentSuccededNotification(email: string, vinyl: Vinyl) {
     await this.mailerService.sendMail({
-      from: this.configService.get<string>('GMAIL_EMAIL'),
+      from: this.configService.get<string>(GMAIL_EMAIL_CONFIG_KEY),
       to: email,
-      subject: 'The payment succeded!',
-      text: `The payment (${vinyl.price}$) for your new vinyl record was successfully completed!\n\n
-            Your new vinyl record:\n
-            Name: ${vinyl.name}\n
-            Author Name: ${vinyl.authorName}\n\n
-            Please, leave a review of it!\n\n
-            Best regards,\n
-            Your vinyl store :)`,
+      subject: PAYMENT_SUCCEDED_MAIL_SUBJECT,
+      text: getPaymentSuccededMailText(
+        vinyl.price,
+        vinyl.name,
+        vinyl.authorName,
+      ),
     });
   }
 }

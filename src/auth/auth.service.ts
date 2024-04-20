@@ -4,6 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { User } from '../users/entities';
 import { Role } from './types';
 import { UsersService } from 'src/users/users.service';
+import {
+  JWT_REFRESH_SECRET_CONFIG_KEY,
+  USER_NOT_FOUND_MESSAGE,
+} from 'src/utils/constants';
 
 @Injectable()
 export class AuthService {
@@ -26,8 +30,8 @@ export class AuthService {
   async getFreshTokens(user: User) {
     const { accessToken, payload } = await this.signAccessToken(user);
     const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_KEY'),
-      expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
+      secret: this.configService.get<string>(JWT_REFRESH_SECRET_CONFIG_KEY),
+      expiresIn: this.configService.get<string>(JWT_REFRESH_SECRET_CONFIG_KEY),
     });
 
     return { accessToken, refreshToken };
@@ -42,7 +46,7 @@ export class AuthService {
   async changeUserRoleToAdmin(userId: string) {
     const existingUser = await this.usersService.getUserById(userId);
     if (!existingUser) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(USER_NOT_FOUND_MESSAGE);
     }
 
     existingUser.role = Role.ADMIN;

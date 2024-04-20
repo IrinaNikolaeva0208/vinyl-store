@@ -23,6 +23,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AdminOnly, Public } from '../utils/decorators';
 import { AdminOnlyGuard } from '../utils/guards';
 import { Request } from 'express';
+import { IMAGE_FIELD } from 'src/utils/constants';
 
 @UseGuards(AdminOnlyGuard)
 @Controller('vinyl')
@@ -46,7 +47,7 @@ export class VinylController {
 
   @AdminOnly()
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor(IMAGE_FIELD))
   async createVinyl(
     @UploadedFile(ParseImagePipe)
     file: Express.Multer.File | undefined,
@@ -58,7 +59,7 @@ export class VinylController {
 
   @AdminOnly()
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor(IMAGE_FIELD))
   updateVinyl(
     @UploadedFile(ParseImagePipe)
     file: Express.Multer.File | undefined,

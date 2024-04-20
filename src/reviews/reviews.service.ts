@@ -11,6 +11,10 @@ import { VinylService } from 'src/vinyl/vinyl.service';
 import { PaginationOptions } from './dto';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Entity, Operation } from 'src/utils/types';
+import {
+  ONE_REVIEW_ALLOWED_MESSAGE,
+  REVIEW_NOT_FOUND_MESSAGE,
+} from 'src/utils/constants';
 
 @Injectable()
 export class ReviewsService {
@@ -39,7 +43,7 @@ export class ReviewsService {
 
   async deleteVinylReview(reviewId: string, userId: string) {
     const { affected } = await this.reviewsRepository.delete(reviewId);
-    if (!affected) throw new NotFoundException('Review not found');
+    if (!affected) throw new NotFoundException(REVIEW_NOT_FOUND_MESSAGE);
     await this.logReviewOperation(userId, reviewId, Operation.DELETE);
   }
 
@@ -47,8 +51,7 @@ export class ReviewsService {
     const review = await this.reviewsRepository.findOne({
       where: { authorId, vinylId },
     });
-    if (review)
-      throw new ConflictException('Only one review per vinyl is allowed');
+    if (review) throw new ConflictException(ONE_REVIEW_ALLOWED_MESSAGE);
   }
 
   async getVinylReviews(options: PaginationOptions) {

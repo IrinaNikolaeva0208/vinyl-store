@@ -14,8 +14,10 @@ import { AuthService } from './auth.service';
 import { User } from '../users/entities';
 import { Public, AdminOnly } from '../utils/decorators';
 import {
+  ACCESS_TOKEN_COOKIE,
   AUTH_REDIRECT_ROUTE,
   LOGOUT_REDIRECT_ROUTE,
+  REFRESH_TOKEN_COOKIE,
 } from 'src/utils/constants';
 import { AdminOnlyGuard } from '../utils/guards';
 
@@ -43,8 +45,8 @@ export class AuthController {
     const { accessToken, refreshToken } =
       await this.authService.getFreshTokens(user);
     response
-      .cookie('access', accessToken, { httpOnly: true })
-      .cookie('refresh', refreshToken, { httpOnly: true })
+      .cookie(ACCESS_TOKEN_COOKIE, accessToken, { httpOnly: true })
+      .cookie(REFRESH_TOKEN_COOKIE, refreshToken, { httpOnly: true })
       .redirect(AUTH_REDIRECT_ROUTE);
   }
 
@@ -60,15 +62,15 @@ export class AuthController {
     );
 
     response
-      .cookie('access', accessToken, { httpOnly: true })
+      .cookie(ACCESS_TOKEN_COOKIE, accessToken, { httpOnly: true })
       .redirect(AUTH_REDIRECT_ROUTE);
   }
 
   @Get('logout')
   logout(@Res() response: Response) {
     response
-      .clearCookie('access')
-      .clearCookie('refresh')
+      .clearCookie(ACCESS_TOKEN_COOKIE)
+      .clearCookie(REFRESH_TOKEN_COOKIE)
       .redirect(LOGOUT_REDIRECT_ROUTE);
   }
 

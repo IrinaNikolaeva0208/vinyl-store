@@ -4,14 +4,24 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { cookieExtractor } from './cookie.extractor';
 import { User } from '../../users/entities';
+import {
+  ACCESS_TOKEN_COOKIE,
+  JWT_AUTH_STRATEGY_NAME,
+  JWT_SECRET_CONFIG_KEY,
+} from 'src/utils/constants';
 
 @Injectable()
-export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
+export class JwtAuthStrategy extends PassportStrategy(
+  Strategy,
+  JWT_AUTH_STRATEGY_NAME,
+) {
   constructor(private readonly configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor('access')]),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        cookieExtractor(ACCESS_TOKEN_COOKIE),
+      ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET_KEY'),
+      secretOrKey: configService.get<string>(JWT_SECRET_CONFIG_KEY),
     });
   }
 

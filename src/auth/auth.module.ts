@@ -14,6 +14,10 @@ import {
 } from './strategies';
 import { UsersModule } from 'src/users/users.module';
 import { JwtAuthGuard } from './guards';
+import {
+  JWT_SECRET_CONFIG_KEY,
+  JWT_TOKEN_EXPIRES_IN_CONFIG_KEY,
+} from 'src/utils/constants';
 
 @Module({
   imports: [
@@ -25,8 +29,10 @@ import { JwtAuthGuard } from './guards';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET_KEY'),
-        signOptions: { expiresIn: configService.get('JWT_TOKEN_EXPIRES_IN') },
+        secret: configService.get(JWT_SECRET_CONFIG_KEY),
+        signOptions: {
+          expiresIn: configService.get(JWT_TOKEN_EXPIRES_IN_CONFIG_KEY),
+        },
       }),
     }),
   ],

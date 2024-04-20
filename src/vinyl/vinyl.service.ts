@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { NO_PHOTO_URL } from '../utils/constants';
+import { NO_PHOTO_URL, VINYL_NOT_FOUND_MESSAGE } from '../utils/constants';
 import { Repository } from 'typeorm';
 import { Vinyl } from './entities';
 import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
@@ -80,7 +80,7 @@ export class VinylService {
 
   async getVinylById(id: string) {
     const requiredVinyl = await this.vinylRepository.findOne({ where: { id } });
-    if (!requiredVinyl) throw new NotFoundException('Vinyl not found');
+    if (!requiredVinyl) throw new NotFoundException(VINYL_NOT_FOUND_MESSAGE);
     return requiredVinyl;
   }
 

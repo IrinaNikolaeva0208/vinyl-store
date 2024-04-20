@@ -9,6 +9,7 @@ import { MailService } from 'src/mail/mail.service';
 import { Vinyl } from 'src/vinyl/entities';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Entity, Operation } from 'src/utils/types';
+import { CHECKOUT_SESSION_COMPLETED_EVENT_TYPE } from 'src/utils/constants';
 
 @Injectable()
 export class PurchasesService {
@@ -32,8 +33,8 @@ export class PurchasesService {
   }
 
   async createPurchaseIfPaymentSucceded(event: Stripe.Event) {
-    if (event.type == 'checkout.session.completed') {
-      const { userId, email, vinylId } = event.data.object['metadata'];
+    if (event.type == CHECKOUT_SESSION_COMPLETED_EVENT_TYPE) {
+      const { userId, email, vinylId } = event.data.object.metadata;
       const vinyl = await this.vinylService.getVinylById(vinylId);
       const newPurchase = this.purchasesRepository.create({
         vinylId,

@@ -1,9 +1,9 @@
 import { ParseFilePipeBuilder, HttpStatus } from '@nestjs/common';
-import { FILE_TYPE, MAX_FILE_SIZE } from './constants';
+import { IMAGE_FILE_TYPE, MAX_FILE_SIZE } from './constants';
 
 export const ParseImagePipe = new ParseFilePipeBuilder()
   .addFileTypeValidator({
-    fileType: FILE_TYPE,
+    fileType: IMAGE_FILE_TYPE,
   })
   .addMaxSizeValidator({
     maxSize: MAX_FILE_SIZE,
