@@ -1,16 +1,9 @@
 import { Transform } from 'class-transformer';
-import {
-  IsString,
-  IsNotEmpty,
-  IsNumber,
-  Min,
-  IsAlpha,
-  IsAlphanumeric,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 export class CreateVinylDto {
   @IsNotEmpty()
-  @IsAlphanumeric()
+  @IsString()
   name: string;
 
   @IsNotEmpty()
@@ -18,7 +11,7 @@ export class CreateVinylDto {
   description: string;
 
   @IsNotEmpty()
-  @IsAlpha()
+  @IsString()
   authorName: string;
 
   @IsNotEmpty()

@@ -1,16 +1,9 @@
 import { Transform } from 'class-transformer';
-import {
-  IsString,
-  IsNumber,
-  Min,
-  IsAlpha,
-  IsAlphanumeric,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsNumber, Min, IsOptional } from 'class-validator';
 
 export class UpdateVinylDto {
   @IsOptional()
-  @IsAlphanumeric()
+  @IsString()
   name: string;
 
   @IsOptional()
@@ -18,7 +11,7 @@ export class UpdateVinylDto {
   description: string;
 
   @IsOptional()
-  @IsAlpha()
+  @IsString()
   authorName: string;
 
   @IsOptional()
