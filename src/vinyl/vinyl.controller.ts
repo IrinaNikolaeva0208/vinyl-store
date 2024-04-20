@@ -23,8 +23,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AdminOnly, Public } from '../utils/decorators';
 import { AdminOnlyGuard } from '../utils/guards';
 import { Request } from 'express';
-import { IMAGE_FIELD } from 'src/utils/constants';
+import { ACCESS_TOKEN_COOKIE, IMAGE_FIELD } from 'src/utils/constants';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Vinyl')
 @UseGuards(AdminOnlyGuard)
 @Controller('vinyl')
 export class VinylController {
@@ -38,6 +40,7 @@ export class VinylController {
     );
   }
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Get('search')
   searchForVinyl(@Query() searchOptions: SearchOptions) {
     return this.vinylService.getVinylPaginationResults<SearchOptions>(
@@ -45,6 +48,7 @@ export class VinylController {
     );
   }
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @Post()
   @UseInterceptors(FileInterceptor(IMAGE_FIELD))
@@ -57,6 +61,7 @@ export class VinylController {
     return this.vinylService.createVinyl(createVinylDto, file, request.user.id);
   }
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @Patch(':id')
   @UseInterceptors(FileInterceptor(IMAGE_FIELD))
@@ -75,6 +80,7 @@ export class VinylController {
     );
   }
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')

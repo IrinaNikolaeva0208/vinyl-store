@@ -18,12 +18,16 @@ import { CreateReviewDto } from './dto/createReview.dto';
 import { AdminOnly, Public } from 'src/utils/decorators';
 import { PaginationOptions } from './dto';
 import { AdminOnlyGuard } from 'src/utils/guards';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
 
+@ApiTags('Reviews')
 @UseGuards(AdminOnlyGuard)
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Post()
   postVinylReview(
     @Req() requset: Request,
@@ -41,6 +45,7 @@ export class ReviewsController {
     return this.reviewsService.getVinylReviews(paginationOptions);
   }
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Delete(':id')
   @AdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)

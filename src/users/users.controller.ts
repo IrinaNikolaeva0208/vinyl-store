@@ -24,7 +24,10 @@ import {
   LOGOUT_REDIRECT_ROUTE,
   REFRESH_TOKEN_COOKIE,
 } from 'src/utils/constants';
+import { ApiTags, ApiCookieAuth } from '@nestjs/swagger';
 
+@ApiCookieAuth(ACCESS_TOKEN_COOKIE)
+@ApiTags('Profile')
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('profile')
 export class UsersController {

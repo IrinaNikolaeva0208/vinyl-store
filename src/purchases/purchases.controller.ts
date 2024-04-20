@@ -12,11 +12,15 @@ import { Stripe } from 'stripe';
 import { PurchasesService } from './purchases.service';
 import { Public } from 'src/utils/decorators';
 import { Request, Response } from 'express';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
 
+@ApiTags('Purchases')
 @Controller('purchases')
 export class PurchasesController {
   constructor(private readonly purchasesService: PurchasesService) {}
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Post('/create-stripe-session')
   async buyVinyl(
     @Query('vinylId', ParseUUIDPipe) vinylId: string,

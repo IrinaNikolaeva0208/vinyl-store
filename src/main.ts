@@ -4,7 +4,11 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { PORT_CONFIG_KEY } from './utils/constants';
+import {
+  ACCESS_TOKEN_COOKIE,
+  PORT_CONFIG_KEY,
+  REFRESH_TOKEN_COOKIE,
+} from './utils/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +24,12 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Vinyl Store')
+    .addCookieAuth(ACCESS_TOKEN_COOKIE, { type: 'apiKey' }, ACCESS_TOKEN_COOKIE)
+    .addCookieAuth(
+      REFRESH_TOKEN_COOKIE,
+      { type: 'apiKey' },
+      REFRESH_TOKEN_COOKIE,
+    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);

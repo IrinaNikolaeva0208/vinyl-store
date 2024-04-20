@@ -20,7 +20,9 @@ import {
   REFRESH_TOKEN_COOKIE,
 } from 'src/utils/constants';
 import { AdminOnlyGuard } from '../utils/guards';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @UseGuards(AdminOnlyGuard)
 @Controller('auth')
 export class AuthController {
@@ -50,6 +52,7 @@ export class AuthController {
       .redirect(AUTH_REDIRECT_ROUTE);
   }
 
+  @ApiCookieAuth(REFRESH_TOKEN_COOKIE)
   @Public()
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
@@ -66,6 +69,7 @@ export class AuthController {
       .redirect(AUTH_REDIRECT_ROUTE);
   }
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Get('logout')
   logout(@Res() response: Response) {
     response
@@ -74,6 +78,7 @@ export class AuthController {
       .redirect(LOGOUT_REDIRECT_ROUTE);
   }
 
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @Post(':id')
   assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {
