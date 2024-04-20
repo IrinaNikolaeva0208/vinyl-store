@@ -6,6 +6,7 @@ import { Role } from './types';
 import { UsersService } from 'src/users/users.service';
 import {
   JWT_REFRESH_SECRET_CONFIG_KEY,
+  JWT_REFRESH_TOKEN_EXPIRES_IN_CONFIG_KEY,
   USER_NOT_FOUND_MESSAGE,
 } from 'src/utils/constants';
 
@@ -31,7 +32,9 @@ export class AuthService {
     const { accessToken, payload } = await this.signAccessToken(user);
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>(JWT_REFRESH_SECRET_CONFIG_KEY),
-      expiresIn: this.configService.get<string>(JWT_REFRESH_SECRET_CONFIG_KEY),
+      expiresIn: this.configService.get<string>(
+        JWT_REFRESH_TOKEN_EXPIRES_IN_CONFIG_KEY,
+      ),
     });
 
     return { accessToken, refreshToken };

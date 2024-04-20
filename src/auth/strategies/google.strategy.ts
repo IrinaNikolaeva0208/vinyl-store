@@ -5,6 +5,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth2';
 import { GoogleProfile, Role } from '../types';
 import {
   DEFAULT_STRING_VALUE,
+  GOOGLE_CLIENT_SECRET_CONFIG_KEY,
   GOOGLE_CALLBACK_URL_CONFIG_KEY,
   GOOGLE_CLIENT_ID_CONFIG_KEY,
   GOOGLE_STRATEGY_NAME,
@@ -18,7 +19,7 @@ export class GoogleStrategy extends PassportStrategy(
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get<string>(GOOGLE_CLIENT_ID_CONFIG_KEY),
-      clientSecret: configService.get<string>(GOOGLE_CLIENT_ID_CONFIG_KEY),
+      clientSecret: configService.get<string>(GOOGLE_CLIENT_SECRET_CONFIG_KEY),
       callbackURL: configService.get<string>(GOOGLE_CALLBACK_URL_CONFIG_KEY),
       scope: ['profile', 'email'],
     });
