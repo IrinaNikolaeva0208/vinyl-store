@@ -1,12 +1,12 @@
 import { VinylPaginationOptions } from './vinylPaginationOptions.dto';
-import { IsOptional, IsAlphanumeric, IsAlpha } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class SearchOptions extends VinylPaginationOptions {
   @IsOptional()
-  @IsAlphanumeric()
+  @IsString()
   name?: string;
 
   @IsOptional()
-  @IsAlpha()
+  @IsString()
   authorName?: string;
 }

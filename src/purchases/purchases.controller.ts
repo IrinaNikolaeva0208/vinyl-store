@@ -12,7 +12,6 @@ import { Stripe } from 'stripe';
 import { PurchasesService } from './purchases.service';
 import { Public } from 'src/utils/decorators';
 import { Request, Response } from 'express';
-import { User } from 'src/users/entities';
 
 @Controller('purchases')
 export class PurchasesController {
@@ -25,8 +24,8 @@ export class PurchasesController {
   ) {
     const redirectUrl = await this.purchasesService.getCheckoutUrl(
       vinylId,
-      (request.user as User).id,
-      (request.user as User).email,
+      request.user.id,
+      request.user.email,
     );
     return { redirectUrl };
   }

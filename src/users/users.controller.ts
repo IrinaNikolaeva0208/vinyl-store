@@ -17,9 +17,13 @@ import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PaginationOptions, UpdateProfileDto } from './dto';
-import { ParseImagePipe } from 'src/utils/parseImage.pipe';
-import { User } from './entities';
-import { LOGOUT_REDIRECT_ROUTE } from 'src/utils/constants';
+import { ParseImagePipe } from 'src/utils/pipes';
+import {
+  ACCESS_TOKEN_COOKIE,
+  AVATAR_FIELD,
+  LOGOUT_REDIRECT_ROUTE,
+  REFRESH_TOKEN_COOKIE,
+} from 'src/utils/constants';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('profile')
@@ -32,20 +36,20 @@ export class UsersController {
     @Req() request: Request,
   ) {
     return this.usersService.getUserWithReviewsAndPurchasedVinyl(
-      (request.user as User).id,
+      request.user.id,
       paginationOptions,
     );
   }
 
   @Patch()
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(FileInterceptor(AVATAR_FIELD))
   updateProfile(
     @UploadedFile(ParseImagePipe) file: Express.Multer.File | undefined,
     @Req() request: Request,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.usersService.updateProfile(
-      (request.user as User).id,
+      request.user.id,
       file,
       updateProfileDto,
     );
@@ -54,10 +58,10 @@ export class UsersController {
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteProfile(@Req() request: Request, @Res() response: Response) {
-    await this.usersService.deleteUserById((request.user as User).id);
+    await this.usersService.deleteUserById(request.user.id);
     response
-      .clearCookie('access')
-      .clearCookie('refresh')
+      .clearCookie(ACCESS_TOKEN_COOKIE)
+      .clearCookie(REFRESH_TOKEN_COOKIE)
       .redirect(LOGOUT_REDIRECT_ROUTE);
   }
 }

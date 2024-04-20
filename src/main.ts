@@ -3,9 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { PORT_CONFIG_KEY } from './utils/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -16,7 +18,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const configService = app.get(ConfigService);
-  const PORT = configService.get<number>('PORT');
+  const PORT = configService.get<number>(PORT_CONFIG_KEY);
   await app.listen(PORT);
 }
 bootstrap();

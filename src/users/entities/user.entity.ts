@@ -9,29 +9,31 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   firstName: string;
 
-  @Column()
+  @Column({ type: 'text' })
   lastName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'date', nullable: true })
   birthdate?: string;
 
-  @Column()
+  @Column({ type: 'text' })
   avatar: string;
 
-  @Column()
+  @Column({ type: 'text' })
   email: string;
 
   @Exclude()
-  @Column()
+  @Column({ type: 'enum', enum: Role })
   role: Role;
 
-  @OneToMany(() => Review, (review) => review.author)
+  @OneToMany(() => Review, (review) => review.author, { cascade: true })
   reviews: Review[];
 
-  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  @OneToMany(() => Purchase, (purchase) => purchase.user, {
+    cascade: true,
+  })
   purchases: Purchase[];
 
   constructor(partial: Partial<User>) {

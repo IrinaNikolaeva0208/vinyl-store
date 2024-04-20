@@ -1,15 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { NO_PHOTO_URL } from '../utils/constants';
+import { NO_PHOTO_URL, VINYL_NOT_FOUND_MESSAGE } from '../utils/constants';
 import { Repository } from 'typeorm';
 import { Vinyl } from './entities';
 import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
 import { VinylPaginationOptions } from './dto';
 import { SortOrder } from '../utils/types';
-import { Review } from 'src/reviews/entities';
 import { LogsService } from 'src/operationsLogs/logs.service';
-import { Entity, Operation } from 'src/utils/types';
+import { Operation } from 'src/utils/types';
 
 @Injectable()
 export class VinylService {
@@ -48,7 +47,7 @@ export class VinylService {
     });
     const savedVinyl = await this.vinylRepository.save(newVinyl);
 
-    await this.logVinylOperation(userId, savedVinyl.id, Operation.CREATE);
+    await this.logsService.createLog(userId, savedVinyl.id, Operation.CREATE);
     return savedVinyl;
   }
 
@@ -63,7 +62,7 @@ export class VinylService {
       ? (await this.cloudinaryService.uploadImage(file)).url
       : requiredVinyl.image;
 
-    await this.logVinylOperation(userId, id, Operation.UPDATE);
+    await this.logsService.createLog(userId, id, Operation.UPDATE);
 
     return await this.vinylRepository.save({
       ...requiredVinyl,
@@ -74,64 +73,48 @@ export class VinylService {
 
   async deleteVinylById(id: string, userId: string) {
     await this.getVinylById(id);
-    await this.logVinylOperation(userId, id, Operation.DELETE);
+    await this.logsService.createLog(userId, id, Operation.DELETE);
     await this.vinylRepository.delete(id);
   }
 
   async getVinylById(id: string) {
     const requiredVinyl = await this.vinylRepository.findOne({ where: { id } });
-    if (!requiredVinyl) throw new NotFoundException('Vinyl not found');
+    if (!requiredVinyl) throw new NotFoundException(VINYL_NOT_FOUND_MESSAGE);
     return requiredVinyl;
   }
 
   async getVinylPage(options: SearchOptions) {
-    const filter: { name?: string; authorName?: string } = {};
-    if (options.name) filter.name = options.name;
-    if (options.authorName) filter.authorName = options.authorName;
+    const { name, authorName } = options;
+    const filter = { name, authorName };
+    Object.keys(filter).forEach(
+      (key) => filter[key] === undefined && delete filter[key],
+    );
 
-    const result = await this.vinylRepository
-      .createQueryBuilder('vinyl')
-      .leftJoinAndMapMany(
-        'vinyl.reviews',
-        Review,
-        'review',
-        'review.vinylId = vinyl.id',
-      )
-      .skip(options.offset)
-      .take(options.limit)
-      .orderBy(
-        options.sortBy
-          ? {
-              [options.sortBy]: options.order || SortOrder.ASC,
-            }
-          : {},
-      )
-      .where(filter)
-      .getManyAndCount();
+    const result = await this.vinylRepository.findAndCount({
+      skip: options.offset,
+      take: options.limit,
+      where: filter,
+      order: options.sortBy
+        ? {
+            [options.sortBy]: options.order || SortOrder.ASC,
+          }
+        : {},
+      relations: { reviews: true },
+    });
 
+    return this.mapReviewAndCountScore(result);
+  }
+
+  mapReviewAndCountScore(vinylPage: [Vinyl[], number]) {
     return [
-      result[0].map((vinyl) => ({
+      vinylPage[0].map((vinyl) => ({
         ...vinyl,
         reviews: vinyl.reviews[0],
         averageScore:
           vinyl.reviews.reduce((prev, cur) => prev + cur.score, 0) /
           vinyl.reviews.length,
       })),
-      result[1],
+      vinylPage[1],
     ];
-  }
-
-  async logVinylOperation(
-    userId: string,
-    entityId: string,
-    operation: Operation,
-  ) {
-    await this.logsService.createLog({
-      performedByUser: userId,
-      entity: Entity.VINYL,
-      createdAt: Date.now(),
-      operation,
-      entityId,
-    });
   }
 }

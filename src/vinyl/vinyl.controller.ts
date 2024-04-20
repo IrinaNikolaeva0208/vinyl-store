@@ -16,14 +16,14 @@ import {
   Req,
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
-import { ParseImagePipe } from '../utils/parseImage.pipe';
+import { ParseImagePipe } from '../utils/pipes';
 import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
 import { VinylPaginationOptions } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AdminOnly, Public } from '../utils/decorators';
 import { AdminOnlyGuard } from '../utils/guards';
 import { Request } from 'express';
-import { User } from 'src/users/entities';
+import { IMAGE_FIELD } from 'src/utils/constants';
 
 @UseGuards(AdminOnlyGuard)
 @Controller('vinyl')
@@ -47,23 +47,19 @@ export class VinylController {
 
   @AdminOnly()
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor(IMAGE_FIELD))
   async createVinyl(
     @UploadedFile(ParseImagePipe)
     file: Express.Multer.File | undefined,
     @Req() request: Request,
     @Body() createVinylDto: CreateVinylDto,
   ) {
-    return this.vinylService.createVinyl(
-      createVinylDto,
-      file,
-      (request.user as User).id,
-    );
+    return this.vinylService.createVinyl(createVinylDto, file, request.user.id);
   }
 
   @AdminOnly()
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor(IMAGE_FIELD))
   updateVinyl(
     @UploadedFile(ParseImagePipe)
     file: Express.Multer.File | undefined,
@@ -75,7 +71,7 @@ export class VinylController {
       id,
       updateVinylDto,
       file,
-      (request.user as User).id,
+      request.user.id,
     );
   }
 
@@ -83,6 +79,6 @@ export class VinylController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteVinyl(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
-    return this.vinylService.deleteVinylById(id, (request.user as User).id);
+    return this.vinylService.deleteVinylById(id, request.user.id);
   }
 }

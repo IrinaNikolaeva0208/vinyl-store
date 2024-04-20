@@ -7,18 +7,18 @@ export class Purchase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   userId: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   vinylId: string;
 
   @Column({ type: 'bigint' })
   createdAt: number;
 
-  @ManyToOne(() => User, (user) => user.purchases)
+  @ManyToOne(() => User, (user) => user.purchases, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Vinyl, (vinyl) => vinyl.purchases)
+  @ManyToOne(() => Vinyl, (vinyl) => vinyl.purchases, { onDelete: 'CASCADE' })
   vinyl: Vinyl;
 }

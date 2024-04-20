@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Log } from './entities';
 import { LogsSearchOptions } from './dto';
-import { Entity, Operation, SortOrder } from 'src/utils/types';
+import { SortOrder, Operation, Entity } from 'src/utils/types';
 
 @Injectable()
 export class LogsService {
@@ -11,8 +11,14 @@ export class LogsService {
     @InjectRepository(Log) private readonly logsRepository: Repository<Log>,
   ) {}
 
-  async createLog(log: Omit<Log, 'id'>) {
-    const newLog = this.logsRepository.create(log);
+  async createLog(userId: string, entityId: string, operation: Operation) {
+    const newLog = this.logsRepository.create({
+      performedByUser: userId,
+      entity: Entity.VINYL,
+      createdAt: Date.now(),
+      operation,
+      entityId,
+    });
     await this.logsRepository.save(newLog);
   }
 
@@ -29,17 +35,11 @@ export class LogsService {
   }
 
   async getLogsPage(options: LogsSearchOptions) {
-    const filter: {
-      entity?: Entity;
-      entityId?: string;
-      performedByUser?: string;
-      operation?: Operation;
-    } = {};
-    if (options.entity) filter.entity = options.entity;
-    if (options.entityId) filter.entityId = options.entityId;
-    if (options.operation) filter.operation = options.operation;
-    if (options.performedByUser)
-      filter.performedByUser = options.performedByUser;
+    const { entity, entityId, performedByUser, operation } = options;
+    const filter = { entity, entityId, performedByUser, operation };
+    Object.keys(filter).forEach(
+      (key) => filter[key] === undefined && delete filter[key],
+    );
 
     return await this.logsRepository.findAndCount({
       where: filter,

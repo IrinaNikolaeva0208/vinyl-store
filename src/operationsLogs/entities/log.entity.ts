@@ -6,18 +6,18 @@ export class Log {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'enum', enum: Operation })
   operation: Operation;
 
-  @Column()
+  @Column({ type: 'enum', enum: OperationOn })
   entity: OperationOn;
 
-  @Column()
+  @Column({ type: 'uuid' })
   entityId: string;
 
   @Column({ type: 'bigint' })
   createdAt: number;
 
-  @Column()
+  @Column({ type: 'uuid' })
   performedByUser: string;
 }
