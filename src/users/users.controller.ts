@@ -18,7 +18,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PaginationOptions, UpdateProfileDto } from './dto';
 import { ParseImagePipe } from 'src/utils/parseImage.pipe';
-import { User } from './entities';
 import { LOGOUT_REDIRECT_ROUTE } from 'src/utils/constants';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -32,7 +31,7 @@ export class UsersController {
     @Req() request: Request,
   ) {
     return this.usersService.getUserWithReviewsAndPurchasedVinyl(
-      (request.user as User).id,
+      request.user.id,
       paginationOptions,
     );
   }
@@ -45,7 +44,7 @@ export class UsersController {
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.usersService.updateProfile(
-      (request.user as User).id,
+      request.user.id,
       file,
       updateProfileDto,
     );
@@ -54,7 +53,7 @@ export class UsersController {
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteProfile(@Req() request: Request, @Res() response: Response) {
-    await this.usersService.deleteUserById((request.user as User).id);
+    await this.usersService.deleteUserById(request.user.id);
     response
       .clearCookie('access')
       .clearCookie('refresh')

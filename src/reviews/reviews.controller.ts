@@ -15,7 +15,6 @@ import {
 import { ReviewsService } from './reviews.service';
 import { Request } from 'express';
 import { CreateReviewDto } from './dto/createReview.dto';
-import { User } from 'src/users/entities';
 import { AdminOnly, Public } from 'src/utils/decorators';
 import { PaginationOptions } from './dto';
 import { AdminOnlyGuard } from 'src/utils/guards';
@@ -31,7 +30,7 @@ export class ReviewsController {
     @Body() createReviewDto: CreateReviewDto,
   ) {
     return this.reviewsService.createReviewOnVinyl(
-      (requset.user as User).id,
+      requset.user.id,
       createReviewDto,
     );
   }
@@ -49,9 +48,6 @@ export class ReviewsController {
     @Param('id', ParseUUIDPipe) reviewId: string,
     @Req() request: Request,
   ) {
-    await this.reviewsService.deleteVinylReview(
-      reviewId,
-      (request.user as User).id,
-    );
+    await this.reviewsService.deleteVinylReview(reviewId, request.user.id);
   }
 }

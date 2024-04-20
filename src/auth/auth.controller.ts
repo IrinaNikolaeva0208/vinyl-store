@@ -56,7 +56,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const { accessToken } = await this.authService.signAccessToken(
-      request.user as User,
+      request.user,
     );
 
     response

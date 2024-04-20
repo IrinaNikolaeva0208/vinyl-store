@@ -33,7 +33,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async signAccessToken(user: User) {
+  async signAccessToken(user: Pick<User, 'id' | 'email' | 'role'>) {
     const payload = { id: user.id, email: user.email, role: user.role };
     const accessToken = await this.jwtService.signAsync(payload);
     return { accessToken, payload };
