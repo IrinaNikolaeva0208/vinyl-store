@@ -7,7 +7,6 @@ import { Vinyl } from './entities';
 import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
 import { VinylPaginationOptions } from './dto';
 import { SortOrder } from '../utils/types';
-import { Review } from 'src/reviews/entities';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Entity, Operation } from 'src/utils/types';
 
@@ -85,39 +84,37 @@ export class VinylService {
   }
 
   async getVinylPage(options: SearchOptions) {
-    const filter: { name?: string; authorName?: string } = {};
-    if (options.name) filter.name = options.name;
-    if (options.authorName) filter.authorName = options.authorName;
+    const { name, authorName } = options;
+    const filter = { name, authorName };
+    Object.keys(filter).forEach(
+      (key) => filter[key] === undefined && delete filter[key],
+    );
 
-    const result = await this.vinylRepository
-      .createQueryBuilder('vinyl')
-      .leftJoinAndMapMany(
-        'vinyl.reviews',
-        Review,
-        'review',
-        'review.vinylId = vinyl.id',
-      )
-      .skip(options.offset)
-      .take(options.limit)
-      .orderBy(
-        options.sortBy
-          ? {
-              [options.sortBy]: options.order || SortOrder.ASC,
-            }
-          : {},
-      )
-      .where(filter)
-      .getManyAndCount();
+    const result = await this.vinylRepository.findAndCount({
+      skip: options.offset,
+      take: options.limit,
+      where: filter,
+      order: options.sortBy
+        ? {
+            [options.sortBy]: options.order || SortOrder.ASC,
+          }
+        : {},
+      relations: { reviews: true },
+    });
 
+    return this.mapReviewAndCountScore(result);
+  }
+
+  mapReviewAndCountScore(vinylPage: [Vinyl[], number]) {
     return [
-      result[0].map((vinyl) => ({
+      vinylPage[0].map((vinyl) => ({
         ...vinyl,
         reviews: vinyl.reviews[0],
         averageScore:
           vinyl.reviews.reduce((prev, cur) => prev + cur.score, 0) /
           vinyl.reviews.length,
       })),
-      result[1],
+      vinylPage[1],
     ];
   }
 
