@@ -16,7 +16,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
-import { ParseImagePipe } from '../utils/parseImage.pipe';
+import { ParseImagePipe } from '../utils/pipes';
 import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
 import { VinylPaginationOptions } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';

@@ -17,7 +17,7 @@ import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PaginationOptions, UpdateProfileDto } from './dto';
-import { ParseImagePipe } from 'src/utils/parseImage.pipe';
+import { ParseImagePipe } from 'src/utils/pipes';
 import {
   ACCESS_TOKEN_COOKIE,
   AVATAR_FIELD,
