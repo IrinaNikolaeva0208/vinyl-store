@@ -7,24 +7,26 @@ export class Vinyl {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   name: string;
 
-  @Column()
+  @Column({ type: 'text' })
   description: string;
 
-  @Column()
+  @Column({ type: 'text' })
   authorName: string;
 
   @Column({ type: 'float' })
   price: number;
 
-  @Column()
+  @Column({ type: 'text' })
   image: string;
 
-  @OneToMany(() => Review, (review) => review.vinyl)
+  @OneToMany(() => Review, (review) => review.vinyl, { cascade: true })
   reviews: Review[];
 
-  @OneToMany(() => Purchase, (purchase) => purchase.vinyl)
+  @OneToMany(() => Purchase, (purchase) => purchase.vinyl, {
+    cascade: true,
+  })
   purchases: Purchase[];
 }

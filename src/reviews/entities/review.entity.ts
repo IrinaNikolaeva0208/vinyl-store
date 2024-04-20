@@ -7,21 +7,21 @@ export class Review {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'int' })
   score: number;
 
-  @Column()
+  @Column({ type: 'text' })
   comment: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   vinylId: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   authorId: string;
 
-  @ManyToOne(() => User, (user) => user.reviews)
+  @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
   author: User;
 
-  @ManyToOne(() => Vinyl, (vinyl) => vinyl.reviews)
+  @ManyToOne(() => Vinyl, (vinyl) => vinyl.reviews, { onDelete: 'CASCADE' })
   vinyl: Vinyl;
 }
