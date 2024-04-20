@@ -7,6 +7,7 @@ import { PORT_CONFIG_KEY } from './utils/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
