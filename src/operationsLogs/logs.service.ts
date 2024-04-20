@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Log } from './entities';
 import { LogsSearchOptions } from './dto';
-import { SortOrder } from 'src/utils/types';
+import { SortOrder, Operation, Entity } from 'src/utils/types';
 
 @Injectable()
 export class LogsService {
@@ -11,8 +11,14 @@ export class LogsService {
     @InjectRepository(Log) private readonly logsRepository: Repository<Log>,
   ) {}
 
-  async createLog(log: Omit<Log, 'id'>) {
-    const newLog = this.logsRepository.create(log);
+  async createLog(userId: string, entityId: string, operation: Operation) {
+    const newLog = this.logsRepository.create({
+      performedByUser: userId,
+      entity: Entity.VINYL,
+      createdAt: Date.now(),
+      operation,
+      entityId,
+    });
     await this.logsRepository.save(newLog);
   }
 

@@ -8,7 +8,7 @@ import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
 import { VinylPaginationOptions } from './dto';
 import { SortOrder } from '../utils/types';
 import { LogsService } from 'src/operationsLogs/logs.service';
-import { Entity, Operation } from 'src/utils/types';
+import { Operation } from 'src/utils/types';
 
 @Injectable()
 export class VinylService {
@@ -47,7 +47,7 @@ export class VinylService {
     });
     const savedVinyl = await this.vinylRepository.save(newVinyl);
 
-    await this.logVinylOperation(userId, savedVinyl.id, Operation.CREATE);
+    await this.logsService.createLog(userId, savedVinyl.id, Operation.CREATE);
     return savedVinyl;
   }
 
@@ -62,7 +62,7 @@ export class VinylService {
       ? (await this.cloudinaryService.uploadImage(file)).url
       : requiredVinyl.image;
 
-    await this.logVinylOperation(userId, id, Operation.UPDATE);
+    await this.logsService.createLog(userId, id, Operation.UPDATE);
 
     return await this.vinylRepository.save({
       ...requiredVinyl,
@@ -73,7 +73,7 @@ export class VinylService {
 
   async deleteVinylById(id: string, userId: string) {
     await this.getVinylById(id);
-    await this.logVinylOperation(userId, id, Operation.DELETE);
+    await this.logsService.createLog(userId, id, Operation.DELETE);
     await this.vinylRepository.delete(id);
   }
 
@@ -116,19 +116,5 @@ export class VinylService {
       })),
       vinylPage[1],
     ];
-  }
-
-  async logVinylOperation(
-    userId: string,
-    entityId: string,
-    operation: Operation,
-  ) {
-    await this.logsService.createLog({
-      performedByUser: userId,
-      entity: Entity.VINYL,
-      createdAt: Date.now(),
-      operation,
-      entityId,
-    });
   }
 }
