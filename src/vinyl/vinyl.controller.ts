@@ -24,7 +24,18 @@ import { AdminOnly, Public } from '../utils/decorators';
 import { AdminOnlyGuard } from '../utils/guards';
 import { Request } from 'express';
 import { ACCESS_TOKEN_COOKIE, IMAGE_FIELD } from 'src/utils/constants';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiConsumes,
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 @ApiTags('Vinyl')
 @UseGuards(AdminOnlyGuard)
@@ -32,6 +43,8 @@ import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 export class VinylController {
   constructor(private readonly vinylService: VinylService) {}
 
+  @ApiOkResponse({ description: 'Recieved vinyl records page' })
+  @ApiBadRequestResponse({ description: 'Invalid query params' })
   @Public()
   @Get()
   getVinylPage(@Query() paginationOptions: VinylPaginationOptions) {
@@ -40,6 +53,9 @@ export class VinylController {
     );
   }
 
+  @ApiOkResponse({ description: 'Recieved vinyl records page' })
+  @ApiBadRequestResponse({ description: 'Invalid query params' })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Get('search')
   searchForVinyl(@Query() searchOptions: SearchOptions) {
@@ -48,6 +64,11 @@ export class VinylController {
     );
   }
 
+  @ApiCreatedResponse({ description: 'Vinyl record was successfully created' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiForbiddenResponse({ description: 'Operation forbidden' })
+  @ApiConsumes('multipart/form-data')
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @Post()
@@ -61,7 +82,13 @@ export class VinylController {
     return this.vinylService.createVinyl(createVinylDto, file, request.user.id);
   }
 
+  @ApiCreatedResponse({ description: 'Vinyl record was successfully updated' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiForbiddenResponse({ description: 'Operation forbidden' })
+  @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
+  @ApiConsumes('multipart/form-data')
   @AdminOnly()
   @Patch(':id')
   @UseInterceptors(FileInterceptor(IMAGE_FIELD))
@@ -80,6 +107,12 @@ export class VinylController {
     );
   }
 
+  @ApiNoContentResponse({
+    description: 'Vinyl record was successfully deleted',
+  })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiForbiddenResponse({ description: 'Operation forbidden' })
+  @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)

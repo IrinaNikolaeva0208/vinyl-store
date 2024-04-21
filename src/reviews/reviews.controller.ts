@@ -18,7 +18,17 @@ import { CreateReviewDto } from './dto/createReview.dto';
 import { AdminOnly, Public } from 'src/utils/decorators';
 import { PaginationOptions } from './dto';
 import { AdminOnlyGuard } from 'src/utils/guards';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
 
 @ApiTags('Reviews')
@@ -27,6 +37,10 @@ import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiCreatedResponse({ description: 'Review was created' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Post()
   postVinylReview(
@@ -39,12 +53,20 @@ export class ReviewsController {
     );
   }
 
+  @ApiOkResponse({ description: 'Recieved vinyl reviews' })
+  @ApiBadRequestResponse({ description: 'Invalid query params' })
+  @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @Public()
   @Get()
   getVinylReviews(@Query() paginationOptions: PaginationOptions) {
     return this.reviewsService.getVinylReviews(paginationOptions);
   }
 
+  @ApiNoContentResponse({ description: 'Successfully deleted review' })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiForbiddenResponse({ description: 'Operation forbidden' })
+  @ApiNotFoundResponse({ description: 'Review not found' })
+  @ApiBadRequestResponse({ description: 'Invalid params' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Delete(':id')
   @AdminOnly()

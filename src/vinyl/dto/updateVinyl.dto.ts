@@ -42,4 +42,13 @@ export class UpdateVinylDto {
   @Min(0.01)
   @Transform(({ value }) => +value)
   price?: number;
+
+  @ApiProperty({
+    description: 'New vinyl record image',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  image?: any;
 }

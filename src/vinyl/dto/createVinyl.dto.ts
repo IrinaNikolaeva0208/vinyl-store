@@ -1,5 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsString, IsNotEmpty, IsNumber, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateVinylDto {
@@ -38,4 +44,13 @@ export class CreateVinylDto {
   @Min(0.05)
   @Transform(({ value }) => +value)
   price: number;
+
+  @ApiProperty({
+    description: 'Vinyl record image',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  image?: any;
 }

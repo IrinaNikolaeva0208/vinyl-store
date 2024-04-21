@@ -24,7 +24,14 @@ import {
   LOGOUT_REDIRECT_ROUTE,
   REFRESH_TOKEN_COOKIE,
 } from 'src/utils/constants';
-import { ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiCookieAuth,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiBadRequestResponse,
+  ApiConsumes,
+} from '@nestjs/swagger';
 
 @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
 @ApiTags('Profile')
@@ -33,6 +40,9 @@ import { ApiTags, ApiCookieAuth } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOkResponse({ description: 'Recieved profile' })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiBadRequestResponse({ description: 'Invalid query params' })
   @Get()
   getProfile(
     @Query() paginationOptions: PaginationOptions,
@@ -45,6 +55,10 @@ export class UsersController {
   }
 
   @Patch()
+  @ApiConsumes('multipart/form-data')
+  @ApiOkResponse({ description: 'Profile was successfully updated' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @UseInterceptors(FileInterceptor(AVATAR_FIELD))
   updateProfile(
     @UploadedFile(ParseImagePipe) file: Express.Multer.File | undefined,
@@ -58,6 +72,7 @@ export class UsersController {
     );
   }
 
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteProfile(@Req() request: Request, @Res() response: Response) {

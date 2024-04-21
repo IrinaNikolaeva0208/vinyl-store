@@ -28,4 +28,13 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsDateString({ strict: true })
   birthdate?: string;
+
+  @ApiProperty({
+    description: 'New user avatar',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  avatar?: any;
 }
