@@ -32,6 +32,8 @@ import {
   ApiBadRequestResponse,
   ApiConsumes,
 } from '@nestjs/swagger';
+import { User } from './entities';
+import { ProfilePaginationResults } from './responses';
 
 @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
 @ApiTags('Profile')
@@ -40,7 +42,10 @@ import {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOkResponse({ description: 'Recieved profile' })
+  @ApiOkResponse({
+    description: 'Recieved profile',
+    type: ProfilePaginationResults,
+  })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiBadRequestResponse({ description: 'Invalid query params' })
   @Get()
@@ -56,7 +61,10 @@ export class UsersController {
 
   @Patch()
   @ApiConsumes('multipart/form-data')
-  @ApiOkResponse({ description: 'Profile was successfully updated' })
+  @ApiOkResponse({
+    description: 'Profile was successfully updated',
+    type: User,
+  })
   @ApiBadRequestResponse({ description: 'Invalid request body' })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @UseInterceptors(FileInterceptor(AVATAR_FIELD))

@@ -88,7 +88,10 @@ export class AuthController {
       .redirect(LOGOUT_REDIRECT_ROUTE);
   }
 
-  @ApiCreatedResponse({ description: 'User role was successfully changed' })
+  @ApiCreatedResponse({
+    description: 'User role was successfully changed to admin',
+    type: User,
+  })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiBadRequestResponse({ description: 'Invalid ID provided' })
   @ApiForbiddenResponse({ description: 'Operation forbidden' })

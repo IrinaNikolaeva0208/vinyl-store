@@ -12,6 +12,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
+import { LogsSearchResults } from './responses';
 
 @ApiTags('Logs')
 @UseGuards(AdminOnlyGuard)
@@ -19,7 +20,7 @@ import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
 export class LogsController {
   constructor(private readonly logsService: LogsService) {}
 
-  @ApiOkResponse({ description: 'Recieved logs' })
+  @ApiOkResponse({ description: 'Recieved logs', type: LogsSearchResults })
   @ApiBadRequestResponse({ description: 'Invalid query parameters' })
   @ApiForbiddenResponse({ description: 'Operation forbidden' })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })

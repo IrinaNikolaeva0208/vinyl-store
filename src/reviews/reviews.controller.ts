@@ -30,6 +30,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
+import { Review } from './entities';
+import { ReviewPaginationResults } from './responses';
 
 @ApiTags('Reviews')
 @UseGuards(AdminOnlyGuard)
@@ -38,7 +40,7 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
-  @ApiCreatedResponse({ description: 'Review was created' })
+  @ApiCreatedResponse({ description: 'Review was created', type: Review })
   @ApiBadRequestResponse({ description: 'Invalid request body' })
   @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
@@ -53,7 +55,10 @@ export class ReviewsController {
     );
   }
 
-  @ApiOkResponse({ description: 'Recieved vinyl reviews' })
+  @ApiOkResponse({
+    description: 'Recieved vinyl reviews',
+    type: ReviewPaginationResults,
+  })
   @ApiBadRequestResponse({ description: 'Invalid query params' })
   @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @Public()

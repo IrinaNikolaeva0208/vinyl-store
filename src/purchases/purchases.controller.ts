@@ -21,6 +21,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
+import { RedirectUrl } from './responses';
 
 @ApiTags('Purchases')
 @Controller('purchases')
@@ -28,7 +29,10 @@ export class PurchasesController {
   constructor(private readonly purchasesService: PurchasesService) {}
 
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
-  @ApiOkResponse({ description: 'Session was successfully created' })
+  @ApiOkResponse({
+    description: 'Session was successfully created',
+    type: RedirectUrl,
+  })
   @ApiBadRequestResponse({ description: 'Invalid query parameters' })
   @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)

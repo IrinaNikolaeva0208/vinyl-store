@@ -36,6 +36,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Vinyl } from './entities';
+import { VinylSearchResults, VinylPaginationResults } from './responses';
 
 @ApiTags('Vinyl')
 @UseGuards(AdminOnlyGuard)
@@ -43,7 +45,10 @@ import {
 export class VinylController {
   constructor(private readonly vinylService: VinylService) {}
 
-  @ApiOkResponse({ description: 'Recieved vinyl records page' })
+  @ApiOkResponse({
+    description: 'Recieved vinyl records page',
+    type: VinylPaginationResults,
+  })
   @ApiBadRequestResponse({ description: 'Invalid query params' })
   @Public()
   @Get()
@@ -53,7 +58,10 @@ export class VinylController {
     );
   }
 
-  @ApiOkResponse({ description: 'Recieved vinyl records page' })
+  @ApiOkResponse({
+    description: 'Recieved vinyl records page',
+    type: VinylSearchResults,
+  })
   @ApiBadRequestResponse({ description: 'Invalid query params' })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
@@ -64,7 +72,10 @@ export class VinylController {
     );
   }
 
-  @ApiCreatedResponse({ description: 'Vinyl record was successfully created' })
+  @ApiCreatedResponse({
+    description: 'Vinyl record was successfully created',
+    type: Vinyl,
+  })
   @ApiBadRequestResponse({ description: 'Invalid request body' })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiForbiddenResponse({ description: 'Operation forbidden' })
@@ -82,7 +93,10 @@ export class VinylController {
     return this.vinylService.createVinyl(createVinylDto, file, request.user.id);
   }
 
-  @ApiCreatedResponse({ description: 'Vinyl record was successfully updated' })
+  @ApiOkResponse({
+    description: 'Vinyl record was successfully updated',
+    type: Vinyl,
+  })
   @ApiBadRequestResponse({ description: 'Invalid request body' })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiForbiddenResponse({ description: 'Operation forbidden' })
