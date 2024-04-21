@@ -20,7 +20,17 @@ import {
   REFRESH_TOKEN_COOKIE,
 } from 'src/utils/constants';
 import { AdminOnlyGuard } from '../utils/guards';
+import {
+  ApiBadRequestResponse,
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @UseGuards(AdminOnlyGuard)
 @Controller('auth')
 export class AuthController {
@@ -50,6 +60,8 @@ export class AuthController {
       .redirect(AUTH_REDIRECT_ROUTE);
   }
 
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiCookieAuth(REFRESH_TOKEN_COOKIE)
   @Public()
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
@@ -66,6 +78,8 @@ export class AuthController {
       .redirect(AUTH_REDIRECT_ROUTE);
   }
 
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Get('logout')
   logout(@Res() response: Response) {
     response
@@ -74,6 +88,15 @@ export class AuthController {
       .redirect(LOGOUT_REDIRECT_ROUTE);
   }
 
+  @ApiCreatedResponse({
+    description: 'User role was successfully changed to admin',
+    type: User,
+  })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiBadRequestResponse({ description: 'Invalid ID provided' })
+  @ApiForbiddenResponse({ description: 'Operation forbidden' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @Post(':id')
   assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {

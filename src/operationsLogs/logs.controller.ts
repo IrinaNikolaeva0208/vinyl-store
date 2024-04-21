@@ -3,12 +3,28 @@ import { AdminOnly } from 'src/utils/decorators';
 import { LogsService } from './logs.service';
 import { LogsSearchOptions } from './dto';
 import { AdminOnlyGuard } from 'src/utils/guards';
+import {
+  ApiBadRequestResponse,
+  ApiCookieAuth,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
+import { LogsSearchResults } from './responses';
 
+@ApiTags('Logs')
 @UseGuards(AdminOnlyGuard)
 @Controller('logs')
 export class LogsController {
   constructor(private readonly logsService: LogsService) {}
 
+  @ApiOkResponse({ description: 'Recieved logs', type: LogsSearchResults })
+  @ApiBadRequestResponse({ description: 'Invalid query parameters' })
+  @ApiForbiddenResponse({ description: 'Operation forbidden' })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @Get()
   getSystemLogs(@Query() searchOptions: LogsSearchOptions) {
