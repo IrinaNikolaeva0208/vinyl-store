@@ -9,6 +9,7 @@ import { VinylPaginationOptions } from './dto';
 import { SortOrder } from '../utils/types';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Operation } from 'src/utils/types';
+import { Review } from 'src/reviews/entities';
 
 @Injectable()
 export class VinylService {
@@ -90,31 +91,45 @@ export class VinylService {
       (key) => filter[key] === undefined && delete filter[key],
     );
 
-    const result = await this.vinylRepository.findAndCount({
-      skip: options.offset,
-      take: options.limit,
-      where: filter,
-      order: options.sortBy
-        ? {
-            [options.sortBy]: options.order || SortOrder.ASC,
-          }
-        : {},
-      relations: { reviews: true },
-    });
+    const result = await this.vinylRepository
+      .createQueryBuilder('vinyl')
+      .leftJoinAndMapOne(
+        'vinyl.reviews',
+        Review,
+        'review',
+        'review.vinylId = vinyl.id',
+      )
+      .addSelect(
+        '(SELECT AVG("r"."score") FROM "review" "r" WHERE "r"."vinylId" = "vinyl"."id") AS "averageScore"',
+      )
+      .addSelect('(SELECT COUNT(*) FROM "vinyl") AS "total"')
+      .groupBy('vinyl.id')
+      .addGroupBy('review.id')
+      .skip(options.offset)
+      .take(options.limit)
+      .orderBy(
+        options.sortBy
+          ? {
+              ['vinyl.' + options.sortBy]: options.order || SortOrder.ASC,
+            }
+          : {},
+      )
+      .where(filter)
+      .getRawAndEntities();
 
-    return this.mapReviewAndCountScore(result);
+    return this.preparePageForResponse(result);
   }
 
-  mapReviewAndCountScore(vinylPage: [Vinyl[], number]) {
-    return [
-      vinylPage[0].map((vinyl) => ({
-        ...vinyl,
-        reviews: vinyl.reviews[0],
-        averageScore:
-          vinyl.reviews.reduce((prev, cur) => prev + cur.score, 0) /
-          vinyl.reviews.length,
-      })),
-      vinylPage[1],
-    ];
+  preparePageForResponse(result: { entities: Vinyl[]; raw: any[] }) {
+    const total = +result.raw[0].total;
+    const vinylsForResonse = result.entities.map((item, index) => {
+      const score = result.raw[index].averageScore;
+      return {
+        ...item,
+        averageScore: score && +(+score).toFixed(2),
+      };
+    });
+
+    return [vinylsForResonse, total];
   }
 }
