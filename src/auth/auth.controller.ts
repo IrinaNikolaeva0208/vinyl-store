@@ -35,9 +35,7 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const user = await this.authService.createGoogleIfNotExists(
-      request.user as User,
-    );
+    const user = await this.authService.findOrCreateUser(request.user as User);
 
     const { accessToken, refreshToken } =
       await this.authService.getFreshTokens(user);

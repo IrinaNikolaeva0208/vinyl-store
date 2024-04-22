@@ -16,7 +16,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async createGoogleIfNotExists(user: Omit<User, 'id'>) {
+  async findOrCreateUser(user: Omit<User, 'id'>) {
     const existingUser = await this.usersService.getUserByEmail(user.email);
 
     if (!existingUser) {
