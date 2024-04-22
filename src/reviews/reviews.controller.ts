@@ -20,6 +20,7 @@ import { PaginationOptions } from './dto';
 import { AdminOnlyGuard } from 'src/utils/guards';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -41,6 +42,7 @@ export class ReviewsController {
 
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiCreatedResponse({ description: 'Review was created', type: Review })
+  @ApiConflictResponse({ description: 'Review already exists' })
   @ApiBadRequestResponse({ description: 'Invalid request body' })
   @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
