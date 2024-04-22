@@ -1,8 +1,8 @@
-import { IsInt, IsNotEmpty, IsUUID, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PaginationOptions {
+export class ReviewsPaginationOptions {
   @ApiProperty({
     description: 'Reviews pagination limit',
     example: 5,
@@ -24,12 +24,4 @@ export class PaginationOptions {
   @Min(0)
   @Transform(({ value }) => +value)
   offset: number;
-
-  @ApiProperty({
-    description: 'Review Vinyl ID',
-    example: '31c32908-abd3-4897-be47-88bdaaef0bc1',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  vinylId: string;
 }

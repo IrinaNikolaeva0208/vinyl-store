@@ -8,15 +8,12 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  Get,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { Request } from 'express';
 import { CreateReviewDto } from './dto/createReview.dto';
-import { AdminOnly, Public } from 'src/utils/decorators';
-import { PaginationOptions } from './dto';
+import { AdminOnly } from 'src/utils/decorators';
 import { AdminOnlyGuard } from 'src/utils/guards';
 import {
   ApiBadRequestResponse,
@@ -26,13 +23,11 @@ import {
   ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
-  ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
 import { Review } from './entities';
-import { ReviewPaginationResults } from './responses';
 
 @ApiTags('Reviews')
 @UseGuards(AdminOnlyGuard)
@@ -55,18 +50,6 @@ export class ReviewsController {
       requset.user.id,
       createReviewDto,
     );
-  }
-
-  @ApiOkResponse({
-    description: 'Recieved vinyl reviews',
-    type: ReviewPaginationResults,
-  })
-  @ApiBadRequestResponse({ description: 'Invalid query params' })
-  @ApiNotFoundResponse({ description: 'Vinyl not found' })
-  @Public()
-  @Get()
-  getVinylReviews(@Query() paginationOptions: PaginationOptions) {
-    return this.reviewsService.getVinylReviews(paginationOptions);
   }
 
   @ApiNoContentResponse({ description: 'Successfully deleted review' })

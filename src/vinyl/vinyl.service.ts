@@ -1,15 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { NO_PHOTO_URL, VINYL_NOT_FOUND_MESSAGE } from '../utils/constants';
 import { Repository } from 'typeorm';
 import { Vinyl } from './entities';
-import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
+import {
+  CreateVinylDto,
+  UpdateVinylDto,
+  SearchOptions,
+  ReviewsPaginationOptions,
+} from './dto';
 import { VinylPaginationOptions } from './dto';
 import { SortOrder } from '../utils/types';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Operation } from 'src/utils/types';
 import { Review } from 'src/reviews/entities';
+import { ReviewsService } from 'src/reviews/reviews.service';
 
 @Injectable()
 export class VinylService {
@@ -17,6 +28,8 @@ export class VinylService {
     @InjectRepository(Vinyl) private vinylRepository: Repository<Vinyl>,
     private readonly cloudinaryService: CloudinaryService,
     private readonly logsService: LogsService,
+    @Inject(forwardRef(() => ReviewsService))
+    private reviewsService: ReviewsService,
   ) {}
 
   async getVinylPaginationResults<Options extends VinylPaginationOptions>(
@@ -29,6 +42,20 @@ export class VinylService {
     const [vinylPage, total] = await this.getVinylPage(options);
     return {
       data: vinylPage,
+      pagination: { ...options, total },
+    };
+  }
+
+  async getVinylReviews(vinylId: string, options: ReviewsPaginationOptions) {
+    const { limit, offset } = options;
+    await this.getVinylById(vinylId);
+    const [reviewsPage, total] = await this.reviewsService.getPageForVinyl(
+      limit,
+      offset,
+      vinylId,
+    );
+    return {
+      data: reviewsPage,
       pagination: { ...options, total },
     };
   }

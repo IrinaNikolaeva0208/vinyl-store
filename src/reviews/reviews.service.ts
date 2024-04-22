@@ -1,14 +1,15 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from './entities';
 import { Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/createReview.dto';
 import { VinylService } from 'src/vinyl/vinyl.service';
-import { PaginationOptions } from './dto';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Operation } from 'src/utils/types';
 import {
@@ -21,6 +22,7 @@ export class ReviewsService {
   constructor(
     @InjectRepository(Review)
     private readonly reviewsRepository: Repository<Review>,
+    @Inject(forwardRef(() => VinylService))
     private readonly vinylService: VinylService,
     private readonly logsService: LogsService,
   ) {}
@@ -58,21 +60,7 @@ export class ReviewsService {
     if (review) throw new ConflictException(ONE_REVIEW_ALLOWED_MESSAGE);
   }
 
-  async getVinylReviews(options: PaginationOptions) {
-    const { limit, offset, vinylId } = options;
-    await this.vinylService.getVinylById(vinylId);
-    const [reviewsPage, total] = await this.getReviewsPageForVinyl(
-      limit,
-      offset,
-      vinylId,
-    );
-    return {
-      data: reviewsPage,
-      pagination: { ...options, total },
-    };
-  }
-
-  async getReviewsPageForVinyl(limit: number, offset: number, vinylId: string) {
+  async getPageForVinyl(limit: number, offset: number, vinylId: string) {
     return await this.reviewsRepository.findAndCount({
       where: { vinylId },
       take: limit,

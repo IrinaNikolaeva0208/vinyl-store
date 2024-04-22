@@ -17,7 +17,12 @@ import {
 } from '@nestjs/common';
 import { VinylService } from './vinyl.service';
 import { ParseImagePipe } from '../utils/pipes';
-import { CreateVinylDto, UpdateVinylDto, SearchOptions } from './dto';
+import {
+  CreateVinylDto,
+  UpdateVinylDto,
+  SearchOptions,
+  ReviewsPaginationOptions,
+} from './dto';
 import { VinylPaginationOptions } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AdminOnly, Public } from '../utils/decorators';
@@ -37,7 +42,11 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Vinyl } from './entities';
-import { VinylSearchResults, VinylPaginationResults } from './responses';
+import {
+  VinylSearchResults,
+  VinylPaginationResults,
+  ReviewPaginationResults,
+} from './responses';
 
 @ApiTags('Vinyl')
 @UseGuards(AdminOnlyGuard)
@@ -91,6 +100,21 @@ export class VinylController {
     @Body() createVinylDto: CreateVinylDto,
   ) {
     return this.vinylService.createVinyl(createVinylDto, file, request.user.id);
+  }
+
+  @ApiOkResponse({
+    description: 'Recieved vinyl reviews',
+    type: ReviewPaginationResults,
+  })
+  @ApiBadRequestResponse({ description: 'Invalid query params' })
+  @ApiNotFoundResponse({ description: 'Vinyl not found' })
+  @Public()
+  @Get(':id/reviews')
+  getVinylReviews(
+    @Param('id', ParseUUIDPipe) vinylId: string,
+    @Query() paginationOptions: ReviewsPaginationOptions,
+  ) {
+    return this.vinylService.getVinylReviews(vinylId, paginationOptions);
   }
 
   @ApiOkResponse({

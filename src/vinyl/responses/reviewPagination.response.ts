@@ -1,8 +1,8 @@
-import { Review } from '../entities';
-import { PaginationOptions } from '../dto';
+import { Review } from '../../reviews/entities';
+import { ReviewsPaginationOptions } from '../dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-class ReviewPaginationResultsParameters extends PaginationOptions {
+class ReviewPaginationResultsParameters extends ReviewsPaginationOptions {
   @ApiProperty({
     description: 'Reviews total number',
     example: 100,
