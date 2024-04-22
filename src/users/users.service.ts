@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { NotFoundException } from '@nestjs/common';
+import { Role } from 'src/auth/types';
 import { User } from './entities';
 import { PaginationOptions, UpdateProfileDto } from './dto';
 import { ReviewsService } from 'src/reviews/reviews.service';
 import { PurchasesService } from 'src/purchases/purchases.service';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Operation } from 'src/utils/types';
+import { USER_NOT_FOUND_MESSAGE } from 'src/utils/constants';
 
 @Injectable()
 export class UsersService {
@@ -98,5 +101,15 @@ export class UsersService {
       pagination: { purchasesLimit, purchasesOffset, totalPurchases },
     };
     return { profile: new User({ ...user }), reviews, purchases };
+  }
+
+  async changeUserRoleToAdmin(userId: string) {
+    const existingUser = await this.getUserById(userId);
+    if (!existingUser) {
+      throw new NotFoundException(USER_NOT_FOUND_MESSAGE);
+    }
+
+    existingUser.role = Role.ADMIN;
+    return await this.updateUser(existingUser);
   }
 }

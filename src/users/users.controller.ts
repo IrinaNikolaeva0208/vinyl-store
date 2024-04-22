@@ -12,6 +12,9 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  Post,
+  ParseUUIDPipe,
+  Param,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -31,9 +34,13 @@ import {
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
   ApiConsumes,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { User } from './entities';
 import { ProfilePaginationResults } from './responses';
+import { AdminOnly } from 'src/utils/decorators';
 
 @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
 @ApiTags('Profile')
@@ -89,5 +96,20 @@ export class UsersController {
       .clearCookie(ACCESS_TOKEN_COOKIE)
       .clearCookie(REFRESH_TOKEN_COOKIE)
       .redirect(LOGOUT_REDIRECT_ROUTE);
+  }
+
+  @ApiCreatedResponse({
+    description: 'User role was successfully changed to admin',
+    type: User,
+  })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiBadRequestResponse({ description: 'Invalid ID provided' })
+  @ApiForbiddenResponse({ description: 'Operation forbidden' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
+  @AdminOnly()
+  @Post(':id')
+  assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {
+    return this.usersService.changeUserRoleToAdmin(userId);
   }
 }

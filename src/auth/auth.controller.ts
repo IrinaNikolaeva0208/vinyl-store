@@ -1,18 +1,9 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  Post,
-  Req,
-  Res,
-  Param,
-  ParseUUIDPipe,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Req, Res } from '@nestjs/common';
 import { GoogleOauthGuard, JwtRefreshGuard } from './guards';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { User } from '../users/entities';
-import { Public, AdminOnly } from '../utils/decorators';
+import { Public } from '../utils/decorators';
 import {
   ACCESS_TOKEN_COOKIE,
   AUTH_REDIRECT_ROUTE,
@@ -21,13 +12,9 @@ import {
 } from 'src/utils/constants';
 import { AdminOnlyGuard } from '../utils/guards';
 import {
-  ApiBadRequestResponse,
   ApiCookieAuth,
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
   ApiTags,
   ApiUnauthorizedResponse,
-  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -86,20 +73,5 @@ export class AuthController {
       .clearCookie(ACCESS_TOKEN_COOKIE)
       .clearCookie(REFRESH_TOKEN_COOKIE)
       .redirect(LOGOUT_REDIRECT_ROUTE);
-  }
-
-  @ApiCreatedResponse({
-    description: 'User role was successfully changed to admin',
-    type: User,
-  })
-  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
-  @ApiBadRequestResponse({ description: 'Invalid ID provided' })
-  @ApiForbiddenResponse({ description: 'Operation forbidden' })
-  @ApiNotFoundResponse({ description: 'User not found' })
-  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
-  @AdminOnly()
-  @Post(':id')
-  assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {
-    return this.authService.changeUserRoleToAdmin(userId);
   }
 }
