@@ -22,6 +22,7 @@ import {
   UpdateVinylDto,
   SearchOptions,
   ReviewsPaginationOptions,
+  CreateReviewDto,
 } from './dto';
 import { VinylPaginationOptions } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -31,6 +32,7 @@ import { Request } from 'express';
 import { ACCESS_TOKEN_COOKIE, IMAGE_FIELD } from 'src/utils/constants';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiConsumes,
   ApiCookieAuth,
   ApiCreatedResponse,
@@ -47,6 +49,7 @@ import {
   VinylPaginationResults,
   ReviewPaginationResults,
 } from './responses';
+import { Review } from 'src/reviews/entities';
 
 @ApiTags('Vinyl')
 @UseGuards(AdminOnlyGuard)
@@ -115,6 +118,25 @@ export class VinylController {
     @Query() paginationOptions: ReviewsPaginationOptions,
   ) {
     return this.vinylService.getVinylReviews(vinylId, paginationOptions);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiCreatedResponse({ description: 'Review was created', type: Review })
+  @ApiConflictResponse({ description: 'Review already exists' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiNotFoundResponse({ description: 'Vinyl not found' })
+  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
+  @Post(':id/reviews')
+  postVinylReview(
+    @Param('id', ParseUUIDPipe) vinylId: string,
+    @Req() requset: Request,
+    @Body() createReviewDto: CreateReviewDto,
+  ) {
+    return this.vinylService.createReviewOnVinyl(
+      requset.user.id,
+      vinylId,
+      createReviewDto,
+    );
   }
 
   @ApiOkResponse({

@@ -1,15 +1,12 @@
 import {
   ConflictException,
-  Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from './entities';
 import { Repository } from 'typeorm';
-import { CreateReviewDto } from './dto/createReview.dto';
-import { VinylService } from 'src/vinyl/vinyl.service';
+import { CreateReviewDto } from '../vinyl/dto/createReview.dto';
 import { LogsService } from 'src/operationsLogs/logs.service';
 import { Operation } from 'src/utils/types';
 import {
@@ -22,20 +19,19 @@ export class ReviewsService {
   constructor(
     @InjectRepository(Review)
     private readonly reviewsRepository: Repository<Review>,
-    @Inject(forwardRef(() => VinylService))
-    private readonly vinylService: VinylService,
     private readonly logsService: LogsService,
   ) {}
 
   async createReviewOnVinyl(
     authorId: string,
+    vinylId: string,
     createReviewDto: CreateReviewDto,
   ) {
-    await this.vinylService.getVinylById(createReviewDto.vinylId);
-    await this.checkIfReviewExists(authorId, createReviewDto.vinylId);
+    await this.checkIfReviewExists(authorId, vinylId);
     const newReview = this.reviewsRepository.create({
       ...createReviewDto,
       authorId,
+      vinylId,
     });
 
     const savedReview = await this.reviewsRepository.save(newReview);

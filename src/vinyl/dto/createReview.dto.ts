@@ -1,4 +1,4 @@
-import { IsInt, Min, Max, IsString, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsInt, Min, Max, IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateReviewDto {
@@ -21,12 +21,4 @@ export class CreateReviewDto {
   @IsNotEmpty()
   @IsString()
   comment: string;
-
-  @ApiProperty({
-    description: 'Vinyl ID',
-    example: '31c32908-abd3-4897-be47-88bdaaef0bc1',
-  })
-  @IsNotEmpty()
-  @IsUUID()
-  vinylId: string;
 }

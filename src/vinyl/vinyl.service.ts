@@ -14,6 +14,7 @@ import {
   UpdateVinylDto,
   SearchOptions,
   ReviewsPaginationOptions,
+  CreateReviewDto,
 } from './dto';
 import { VinylPaginationOptions } from './dto';
 import { SortOrder } from '../utils/types';
@@ -58,6 +59,19 @@ export class VinylService {
       data: reviewsPage,
       pagination: { ...options, total },
     };
+  }
+
+  async createReviewOnVinyl(
+    authorId: string,
+    vinylId: string,
+    createReviewDto: CreateReviewDto,
+  ) {
+    await this.getVinylById(vinylId);
+    return await this.reviewsService.createReviewOnVinyl(
+      authorId,
+      vinylId,
+      createReviewDto,
+    );
   }
 
   async createVinyl(

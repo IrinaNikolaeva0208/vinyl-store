@@ -1,9 +1,7 @@
 import {
-  Body,
   Controller,
   Param,
   ParseUUIDPipe,
-  Post,
   Req,
   Delete,
   HttpCode,
@@ -12,14 +10,11 @@ import {
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { Request } from 'express';
-import { CreateReviewDto } from './dto/createReview.dto';
 import { AdminOnly } from 'src/utils/decorators';
 import { AdminOnlyGuard } from 'src/utils/guards';
 import {
   ApiBadRequestResponse,
-  ApiConflictResponse,
   ApiCookieAuth,
-  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
@@ -27,30 +22,12 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ACCESS_TOKEN_COOKIE } from 'src/utils/constants';
-import { Review } from './entities';
 
 @ApiTags('Reviews')
 @UseGuards(AdminOnlyGuard)
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
-
-  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
-  @ApiCreatedResponse({ description: 'Review was created', type: Review })
-  @ApiConflictResponse({ description: 'Review already exists' })
-  @ApiBadRequestResponse({ description: 'Invalid request body' })
-  @ApiNotFoundResponse({ description: 'Vinyl not found' })
-  @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
-  @Post()
-  postVinylReview(
-    @Req() requset: Request,
-    @Body() createReviewDto: CreateReviewDto,
-  ) {
-    return this.reviewsService.createReviewOnVinyl(
-      requset.user.id,
-      createReviewDto,
-    );
-  }
 
   @ApiNoContentResponse({ description: 'Successfully deleted review' })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
