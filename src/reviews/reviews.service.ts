@@ -80,7 +80,7 @@ export class ReviewsService {
     });
   }
 
-  async getReviewsPageForUser(limit: number, offset: number, authorId: string) {
+  async getPageForUser(limit: number, offset: number, authorId: string) {
     return await this.reviewsRepository.findAndCount({
       where: { authorId },
       take: limit,

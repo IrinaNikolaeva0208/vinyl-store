@@ -70,37 +70,37 @@ export class UsersService {
     return new User(user);
   }
 
-  async getUserWithReviewsAndPurchasedVinyl(
+  async getUserPurchases(userId: string, paginationOptions: PaginationOptions) {
+    return await this.getUserRelations(
+      this.purchasesService,
+      userId,
+      paginationOptions,
+    );
+  }
+
+  async getUserReviews(userId: string, paginationOptions: PaginationOptions) {
+    return await this.getUserRelations(
+      this.reviewsService,
+      userId,
+      paginationOptions,
+    );
+  }
+
+  async getUserRelations(
+    service: ReviewsService | PurchasesService,
     userId: string,
     paginationOptions: PaginationOptions,
   ) {
-    const { reviewsLimit, reviewsOffset, purchasesLimit, purchasesOffset } =
-      paginationOptions;
-
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-    const [userReviewsPage, totalReviews] =
-      await this.reviewsService.getReviewsPageForUser(
-        reviewsLimit,
-        reviewsOffset,
-        userId,
-      );
-    const [userPurchasesPage, totalPurchases] =
-      await this.purchasesService.getPurchasesPageForUser(
-        purchasesLimit,
-        purchasesOffset,
-        userId,
-      );
-    const reviews = {
-      data: userReviewsPage,
-      pagination: { reviewsLimit, reviewsOffset, totalReviews },
+    const { limit, offset } = paginationOptions;
+    const [userRelationsPage, total] = await service.getPageForUser(
+      limit,
+      offset,
+      userId,
+    );
+    return {
+      data: userRelationsPage,
+      pagination: { limit, offset, total },
     };
-    const purchases = {
-      data: userPurchasesPage,
-      pagination: { purchasesLimit, purchasesOffset, totalPurchases },
-    };
-    return { profile: new User({ ...user }), reviews, purchases };
   }
 
   async changeUserRoleToAdmin(userId: string) {

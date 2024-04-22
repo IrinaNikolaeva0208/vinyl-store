@@ -13,7 +13,7 @@ export class SearchOptions extends VinylPaginationOptions {
   name?: string;
 
   @ApiProperty({
-    description: 'Vinyl record name to search for',
+    description: 'Vinyl record author name to search for',
     example: 'Carrie Turner-Klocko',
     required: false,
   })

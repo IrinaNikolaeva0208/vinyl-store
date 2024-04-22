@@ -1,53 +1,17 @@
 import { Review } from 'src/reviews/entities';
-import { User } from '../entities';
 import { Purchase } from 'src/purchases/entities';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationOptions } from '../dto';
 
-class ReviewsPaginationResultsParameters {
+class PaginationResultsParameters extends PaginationOptions {
   @ApiProperty({
-    description: 'Reviews pagination limit',
-    example: 5,
-    minimum: 1,
-  })
-  reviewsLimit: number;
-
-  @ApiProperty({
-    description: 'Reviews pagination offset',
-    example: 5,
-    minimum: 0,
-  })
-  reviewsOffset: number;
-
-  @ApiProperty({
-    description: 'Total number of reviews',
+    description: 'Total number of entities',
     example: 5,
   })
-  totalReviews: number;
+  total: number;
 }
 
-class PurchasesPaginationResultsParameters {
-  @ApiProperty({
-    description: 'Purchases pagination limit',
-    example: 5,
-    minimum: 1,
-  })
-  purchasesLimit: number;
-
-  @ApiProperty({
-    description: 'Purchases pagination offset',
-    example: 5,
-    minimum: 0,
-  })
-  purchasesOffset: number;
-
-  @ApiProperty({
-    description: 'Total number of purchases',
-    example: 5,
-  })
-  totalPurchases: number;
-}
-
-class ReviewsPage {
+export class ReviewsPaginationResults {
   @ApiProperty({
     description: "Set of user's reviews",
     type: [Review],
@@ -56,12 +20,12 @@ class ReviewsPage {
 
   @ApiProperty({
     description: 'Reviews pagination parameters',
-    type: ReviewsPaginationResultsParameters,
+    type: PaginationResultsParameters,
   })
-  pagination: ReviewsPaginationResultsParameters;
+  pagination: PaginationResultsParameters;
 }
 
-class PurchasesPage {
+export class PurchasesPaginationResults {
   @ApiProperty({
     description: "Set of user's purchases",
     type: [Purchase],
@@ -70,21 +34,7 @@ class PurchasesPage {
 
   @ApiProperty({
     description: 'Purchases pagination parameters',
-    type: PurchasesPaginationResultsParameters,
+    type: PaginationResultsParameters,
   })
-  pagination: PurchasesPaginationResultsParameters;
-}
-
-export class ProfilePaginationResults extends User {
-  @ApiProperty({
-    description: 'Reviews page',
-    type: ReviewsPage,
-  })
-  reviews: Review[];
-
-  @ApiProperty({
-    description: 'Purchases page',
-    type: PurchasesPage,
-  })
-  purchases: Purchase[];
+  pagination: PaginationResultsParameters;
 }

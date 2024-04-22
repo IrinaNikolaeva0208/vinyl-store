@@ -39,7 +39,10 @@ import {
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { User } from './entities';
-import { ProfilePaginationResults } from './responses';
+import {
+  ReviewsPaginationResults,
+  PurchasesPaginationResults,
+} from './responses';
 import { AdminOnly } from 'src/utils/decorators';
 
 @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
@@ -51,19 +54,43 @@ export class UsersController {
 
   @ApiOkResponse({
     description: 'Recieved profile',
-    type: ProfilePaginationResults,
+    type: User,
+  })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @Get()
+  getProfile(@Req() request: Request) {
+    return this.usersService.getUserById(request.user.id);
+  }
+
+  @ApiOkResponse({
+    description: "Recieved user's purchases",
+    type: PurchasesPaginationResults,
   })
   @ApiUnauthorizedResponse({ description: 'Authorization failed' })
   @ApiBadRequestResponse({ description: 'Invalid query params' })
-  @Get()
-  getProfile(
+  @Get('/purchases')
+  getPurchases(
     @Query() paginationOptions: PaginationOptions,
     @Req() request: Request,
   ) {
-    return this.usersService.getUserWithReviewsAndPurchasedVinyl(
+    return this.usersService.getUserPurchases(
       request.user.id,
       paginationOptions,
     );
+  }
+
+  @ApiOkResponse({
+    description: "Recieved user's reviews",
+    type: ReviewsPaginationResults,
+  })
+  @ApiUnauthorizedResponse({ description: 'Authorization failed' })
+  @ApiBadRequestResponse({ description: 'Invalid query params' })
+  @Get('/reviews')
+  getReviews(
+    @Query() paginationOptions: PaginationOptions,
+    @Req() request: Request,
+  ) {
+    return this.usersService.getUserReviews(request.user.id, paginationOptions);
   }
 
   @Patch()

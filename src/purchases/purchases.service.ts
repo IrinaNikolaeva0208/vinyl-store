@@ -52,7 +52,7 @@ export class PurchasesService {
     }
   }
 
-  async getPurchasesPageForUser(limit: number, offset: number, userId: string) {
+  async getPageForUser(limit: number, offset: number, userId: string) {
     return await this.purchasesRepository
       .createQueryBuilder('purchase')
       .leftJoinAndMapOne(
