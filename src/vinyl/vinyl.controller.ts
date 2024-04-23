@@ -127,12 +127,12 @@ export class VinylController {
   @ApiNotFoundResponse({ description: 'Vinyl not found' })
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @Post(':id/reviews')
-  postVinylReview(
+  async postVinylReview(
     @Param('id', ParseUUIDPipe) vinylId: string,
     @Req() requset: Request,
     @Body() createReviewDto: CreateReviewDto,
   ) {
-    return this.vinylService.createReviewOnVinyl(
+    return await this.vinylService.createReviewOnVinyl(
       requset.user.id,
       vinylId,
       createReviewDto,
@@ -152,14 +152,14 @@ export class VinylController {
   @AdminOnly()
   @Patch(':id')
   @UseInterceptors(FileInterceptor(IMAGE_FIELD))
-  updateVinyl(
+  async updateVinyl(
     @UploadedFile(ParseImagePipe)
     file: Express.Multer.File | undefined,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateVinylDto: UpdateVinylDto,
     @Req() request: Request,
   ) {
-    return this.vinylService.updateVinylById(
+    return await this.vinylService.updateVinylById(
       id,
       updateVinylDto,
       file,
@@ -177,7 +177,10 @@ export class VinylController {
   @AdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  deleteVinyl(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
-    return this.vinylService.deleteVinylById(id, request.user.id);
+  async deleteVinyl(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ) {
+    return await this.vinylService.deleteVinylById(id, request.user.id);
   }
 }
