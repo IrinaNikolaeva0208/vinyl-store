@@ -164,6 +164,7 @@ export class VinylService {
   preparePageForResponse(result: { entities: Vinyl[]; raw: any[] }) {
     const total = +result.raw[0].total;
     const vinylsForResonse = result.entities.map((item, index) => {
+      while (item.id != result.raw[index]['vinyl_id']) index++;
       const score = result.raw[index].averageScore;
       return {
         ...item,

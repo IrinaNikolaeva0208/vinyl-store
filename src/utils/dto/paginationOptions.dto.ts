@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationOptions {
   @ApiProperty({
-    description: 'Pagination offset',
+    description: 'Pagination limit',
     example: 10,
     minimum: 1,
   })
@@ -16,7 +16,7 @@ export class PaginationOptions {
   limit: number;
 
   @ApiProperty({
-    description: 'Pagination limit',
+    description: 'Pagination offset',
     example: 10,
     minimum: 0,
   })
