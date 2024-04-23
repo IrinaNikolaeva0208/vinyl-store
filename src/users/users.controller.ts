@@ -136,7 +136,7 @@ export class UsersController {
   @ApiCookieAuth(ACCESS_TOKEN_COOKIE)
   @AdminOnly()
   @Post(':id')
-  assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {
-    return this.usersService.changeUserRoleToAdmin(userId);
+  async assignUserAsAdmin(@Param('id', ParseUUIDPipe) userId: string) {
+    return await this.usersService.changeUserRoleToAdmin(userId);
   }
 }
