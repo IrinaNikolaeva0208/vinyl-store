@@ -105,7 +105,7 @@ export class UsersService {
 
   async changeUserRoleToAdmin(userId: string) {
     const existingUser = await this.getUserById(userId);
-    if (!existingUser) {
+    if (!Object.keys(existingUser).length) {
       throw new NotFoundException(USER_NOT_FOUND_MESSAGE);
     }
 
